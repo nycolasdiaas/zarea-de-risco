@@ -13,6 +13,7 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 - **Python**: 
 - **MinIO**: 
 - **Docker**:
+- **Flask**:
   
 ## Funcionalidades
 
@@ -23,3 +24,32 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 ## Como Rodar o Projeto
 
 1. Clone este repositório:
+```bash
+git clone https://github.com/nycolasdiaas/zarea-de-risco.git
+```
+
+2. Crie um ambiente virtual (opcional):
+```bash
+python3 -m venv .venv
+```
+2.1 Ative o ambiente virtual:
+
+```bash
+source .venv/bin/activate
+```
+
+3. Instale as dependências:
+```bash
+pip install -r requirements.txt
+```
+
+4. Para rodar localmente:
+```bash
+    flask --app backend/app.py --debug run 
+```
+
+4.1 No docker:
+```bash
+cd ./backend/
+docker compose up --build
+```
