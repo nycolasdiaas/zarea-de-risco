@@ -1,0 +1,12 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    versioneer.py,
+    botcity/core/_version.py,
+    docs/source/conf.py,
+    .venv,
+    venv,
+max-line-length = 115
