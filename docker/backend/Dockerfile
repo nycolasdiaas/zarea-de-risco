@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY ../../requirements.txt .
 
-COPY ../../backend/ .
+COPY ../../backend/ ./backend/
 
 RUN python3 -m pip install --upgrade pip \
   && pip install --no-cache-dir -r requirements.txt
@@ -13,4 +13,4 @@ RUN python3 -m pip install --upgrade pip \
 EXPOSE 5000
 
 ENTRYPOINT ["flask"]
-CMD ["run", "--host=0.0.0.0"]
+CMD ["run", "--host=0.0.0.0", "--debug"]
