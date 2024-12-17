@@ -10,6 +10,12 @@ services:
       - "9000:9000"
       - "9090:9090"
     volumes:
-      - /mnt/wsl/minio/data:/data
-      - /mnt/wsl/minio/config:/root/.minio
+      - minio-data:/data
+      - minio-config:/root/.minio
     command: server /data --console-address ":9090"
+
+volumes:
+  minio-data:
+    driver: local
+  minio-config:
+    driver: local
