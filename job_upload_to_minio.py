@@ -60,5 +60,5 @@ try:
                     remote_folder = f"{chat}/{current_date}"
                     upload_folder_to_minio(date_folder, remote_folder)
 
-except FailUploadException:
-    raise FailUploadException("Erro ao subir os arquivos para o MinIO.")
+except S3Error as e:
+    raise FailUploadException(f"Erro ao subir os arquivos para o MinIO: {e}")
