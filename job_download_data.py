@@ -11,8 +11,8 @@ from exceptions import CompressionException
 
 load_dotenv()
 
-api_id = os.getenv("TELEGRAM_API_ID")
-api_hash = os.getenv("TELEGRAM_API_HASH")
+api_id = int(os.getenv("TELEGRAM_API_ID", 0))
+api_hash = os.getenv("TELEGRAM_API_HASH", "None")
 
 chats = ["Portalnoticiasceara"]
 base_output_folder = "./downloads/"
@@ -104,8 +104,8 @@ def save_media(message, media_folder):
             print(f"Arquivo comprimido salvo em: {compressed_file_path}")
             return compressed_file_path, media_type
 
-        except CompressionException:
-            CompressionException("Erro ao baixar e comprimir mídia.")
+        except Exception as e:
+            raise CompressionException(f"Erro ao baixar e comprimir mídia: {e}")
     return None, None
 
 
