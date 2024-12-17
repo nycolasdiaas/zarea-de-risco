@@ -10,7 +10,8 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 
 ## Tecnologias Usadas
 
-- **Python**: 
+- **Python**(backend):
+- **Javacript**(frontend): 
 - **MinIO**: 
 - **Docker**:
 - **Flask**:
@@ -21,7 +22,7 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 - Armazenamento e organização de dados coletados.
 - Análise de conteúdos com foco em segurança pública.
   
-## Como Rodar o Projeto
+## Como rodar o backend
 
 1. Clone este repositório:
 ```bash
