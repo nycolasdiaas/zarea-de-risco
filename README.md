@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 4. Para rodar localmente:
 ```bash
-    flask --app backend/app.py --debug run 
+flask --app backend/app.py --debug run 
 ```
 
 4.1 No docker:
