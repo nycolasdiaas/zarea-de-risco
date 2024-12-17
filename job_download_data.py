@@ -17,7 +17,7 @@ api_hash = os.getenv("TELEGRAM_API_HASH", "None")
 chats = ["Portalnoticiasceara"]
 base_output_folder = "./downloads/"
 df_list = []
-processed_messages = []
+# processed_messages = []
 
 
 def save_media(message, media_folder):
@@ -56,9 +56,10 @@ def save_media(message, media_folder):
             compressed_file_name = f"{file_name}.zstd"
             compressed_file_path = os.path.join(media_folder, compressed_file_name)
 
-            if os.path.exists(compressed_file_name):
-                print(f"A mídia já foi baixada e comprimida: {compressed_file_name}")
-                return compressed_file_name, media_type
+            if os.path.exists(compressed_file_path):
+                print(f"A mídia já foi baixada e comprimida: {compressed_file_path}")
+                relative_path = os.path.relpath(compressed_file_path, base_output_folder)
+                return relative_path, media_type
 
             with tempfile.TemporaryDirectory() as temp_dir:
                 temp_path = os.path.join(temp_dir)
@@ -88,21 +89,9 @@ def save_media(message, media_folder):
                     with open(temp_path, "rb") as temp_file:
                         compressor.copy_stream(temp_file, compressed_file)
 
-                # if total_size:
-                #         with tqdm(total=total_size, unit='B', unit_scale=True, desc=f"Baixando e comprimindo {file_name}") as pbar:
-                #             with open(compressed_file_path, 'wb') as compressed_file:
-                #                 compressor = zstd.ZstdCompressor(level=3, threads=4)
-                #                 # file_path = message.download_media(file=file_path, progress_callback=lambda d, t: pbar.update(d - pbar.n if t else 0))
-                #                 with message.download_media(progress_callback=lambda d, t: pbar.update(d-pbar.n if t else 0)) as file:
-                #                     compressor.copy_stream(file, compressed_file)
-                # else:
-                #     # file_path = message.download_media(file=file_path)
-                #     with open(compressed_file_path, 'wb') as compressed_file:
-                #         compressor = zstd.ZstdCompressor(level=3, threads=4)
-                #         with message.download_media() as file:
-                #             compressor.copy_stream(file, compressed_file)
             print(f"Arquivo comprimido salvo em: {compressed_file_path}")
-            return compressed_file_path, media_type
+            relative_path = os.path.relpath(compressed_file_path, base_output_folder)
+            return relative_path, media_type
 
         except Exception as e:
             raise CompressionException(f"Erro ao baixar e comprimir mídia: {e}")
@@ -110,7 +99,7 @@ def save_media(message, media_folder):
 
 
 os.makedirs(base_output_folder, exist_ok=True)
-
+fuso_correto = datetime.datetime.utcnow() - datetime.timedelta(hours=3)
 for chat in chats:
     group_folder = os.path.join(base_output_folder, chat)
 
@@ -118,11 +107,13 @@ for chat in chats:
         all_messages = list(
             client.iter_messages(
                 chat,
-                offset_date=datetime.date.today() - datetime.timedelta(days=2),
+                offset_date=fuso_correto.date() - datetime.timedelta(days=1),
                 reverse=True,
             )
         )
 
+        messages_by_date = {}
+        
         with tqdm(
             total=len(all_messages),
             desc="Processando mensagens e baixando mídias",
@@ -133,7 +124,8 @@ for chat in chats:
             for message in all_messages:
                 print(f"\nProcessando mensagem ID: {message.id}")
 
-                media_folder = f"{group_folder}/{str(message.date.date())}/media/"
+                message_date = (message.date - datetime.timedelta(hours=3)).date()
+                media_folder = f"{group_folder}/{str((message.date - datetime.timedelta(hours=3)).date() )}/media/"
                 os.makedirs(media_folder, exist_ok=True)
                 media_path, media_type = save_media(message, media_folder)
 
@@ -206,7 +198,7 @@ for chat in chats:
                                     ),
                                     "file_reference": None,
                                     "date": (
-                                        message.media.photo.date.isoformat()
+                                        (message.media.photo.date - datetime.timedelta(hours=3)).isoformat()
                                         if message.media
                                         and hasattr(message.media, "photo")
                                         else None
@@ -224,6 +216,7 @@ for chat in chats:
                         if message.media
                         else None
                     ),
+                    "media_path": media_path if media_path else None,
                     "views": message.views,
                     "forwards": message.forwards,
                     "replies": (
@@ -248,7 +241,7 @@ for chat in chats:
                         else None
                     ),
                     "edit_date": (
-                        message.edit_date.isoformat() if message.edit_date else None
+                        (message.edit_date - datetime.timedelta(hours=3)).isoformat() if message.edit_date else None
                     ),
                     "reactions": (
                         [
@@ -263,13 +256,24 @@ for chat in chats:
                     ),
                 }
 
-                processed_messages.append(data)
+                """ processed_messages.append(data) """
+                if message_date not in messages_by_date:
+                    messages_by_date[message_date] = []
+                    
+                messages_by_date[message_date].append(data)
+                
                 pbar.update(1)
 
-                output_file = f"{group_folder}/{str(message.date.date())}/metadata.json"
+                # output_file = f"{group_folder}/{str((message.date - datetime.timedelta(hours=3)).date() )}/metadata.json"
 
-                with open(output_file, "w", encoding="utf-8") as json_file:
-                    json.dump(
-                        processed_messages, json_file, ensure_ascii=False, indent=4
-                    )
-                print(f"\nMensagens processadas salvas em: {output_file}")
+                # with open(output_file, "w", encoding="utf-8") as json_file:
+                #     json.dump(
+                #         processed_messages, json_file, ensure_ascii=False, indent=4
+                #     )
+                # print(f"\nMensagens processadas salvas em: {output_file}")
+                # Salvar os metadados agrupados por data
+                for date, messages in messages_by_date.items():
+                    output_file = f"{group_folder}/{str(date)}/metadata.json"
+                    with open(output_file, "w", encoding="utf-8") as json_file:
+                        json.dump(messages, json_file, ensure_ascii=False, indent=4)
+                    print(f"\nMensagens processadas salvas em: {output_file}")
