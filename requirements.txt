@@ -9,6 +9,7 @@ cffi==1.17.1
 charset-normalizer==3.4.0
 cleo==2.1.0
 click==8.1.7
+colorama==0.4.6
 crashtest==0.4.1
 cryptography==44.0.0
 distlib==0.3.9
@@ -40,6 +41,7 @@ platformdirs==4.3.6
 poetry==1.8.5
 poetry-core==1.9.1
 poetry-plugin-export==1.8.0
+psutil==6.1.0
 ptyprocess==0.7.0
 pyaes==1.6.1
 pyasn1==0.6.1
@@ -58,6 +60,7 @@ rsa==4.9
 SecretStorage==3.3.3
 shellingham==1.5.4
 six==1.17.0
+taskipy==1.14.1
 Telethon==1.38.1
 tomli==2.2.1
 tomlkit==0.13.2
