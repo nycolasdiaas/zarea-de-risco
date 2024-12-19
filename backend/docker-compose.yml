@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   flask-app:
+    container_name: zarea
     build:
       context: ../
       dockerfile: docker/backend/Dockerfile
