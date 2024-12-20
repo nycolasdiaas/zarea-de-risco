@@ -2,6 +2,7 @@ from minio import Minio
 from .minio_client_interface import IMinioClient
 from typing import Optional
 from urllib3 import HTTPResponse
+from urllib3.exceptions import MaxRetryError
 
 
 class MinioClient(IMinioClient):
