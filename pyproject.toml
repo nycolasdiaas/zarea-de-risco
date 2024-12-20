@@ -74,9 +74,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.taskipy.tasks]
 # flask app
-zarea_build = { cmd = "cd backend && docker compose up -d --build", help = "build the flask app" }
+zarea_build = { cmd = "docker compose -f ./backend/docker-compose.yml up -d --build", help = "build the flask app" }
 zarea_up = { cmd = "docker start zarea", help = "start flask app"}
-zarea_down = { cmd = "docker stop zarea", help = "stop flask app"}
+zarea_res = { cmd = "docker stop zarea && echo restarting container... && task zarea_up", help = "restart flask app"}
+zarea_down = { cmd = "docker stop zarea && echo removing container... && task zarea_rm", help = "stop and remove flask app"}
 zarea_rm = { cmd = "docker container rm zarea", help = "remove flask app"}
 
 # minio
