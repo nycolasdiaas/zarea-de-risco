@@ -10,10 +10,7 @@ services:
       ../.env
     ports:
       - "5000:5000"
-    environment:
-      FLASK_APP: app.py
-      FLASK_ENV: development
 
     volumes:
-      - ../backend:/app
+      - ../backend:/app/backend
 
