@@ -1,30 +1,36 @@
-from os import path, makedirs, getenv
-from dotenv import load_dotenv
-from datetime import datetime, timedelta
+import os
 import json
-from tqdm import tqdm
-from telethon.sync import TelegramClient
+from datetime import datetime, timedelta
 import zstandard as zstd
+from queue import Queue
+from threading import Thread, Lock
+from telethon import TelegramClient
+from dotenv import load_dotenv
 
 load_dotenv()
+API_ID = int(os.getenv("TELEGRAM_API_ID", 0))
+API_HASH = os.getenv("TELEGRAM_API_HASH", "None")
+BASE_OUTPUT_FOLDER = "./downloads"
+lock = Lock()
 
-API_ID = int(getenv("TELEGRAM_API_ID", 0))
-API_HASH = getenv("TELEGRAM_API_HASH", "None")
-SESSION_NAME = getenv("SESSION_NAME")
-
-chats = [getenv("TELEGRAM_CHATS")]
-base_output_folder = "/home/nycolasdiaas/Projetos/zarea-de-risco/downloads"
-
-# Função para salvar mídia
-def save_media(message, media_folder):
-    if not message.media:
-        return None, None
-
-    try:
-        media_type = None
-        file_name = None
-
-        if isinstance(message.media, message.media.__class__):
+class TelegramDownloader:
+    def __init__(self, chats, max_threads=4):
+        self.chats = chats
+        self.messages_queue = Queue()
+        self.max_threads = max_threads
+        self.fuso_correto = datetime.utcnow() - timedelta(hours=3)
+    
+    def save_media(self, message, media_folder):
+        """
+        Salvando as mídias das mensagens
+        """
+        
+        if not message.media:
+            return None, None
+        
+        try:
+            media_type = None
+            file_name = None
             if hasattr(message.media, "photo"):
                 media_type = "photo"
                 file_name = f"photo_{message.id}.jpg"
@@ -37,106 +43,115 @@ def save_media(message, media_folder):
             elif hasattr(message.media, "document"):
                 media_type = "document"
                 file_name = f"document_{message.id}.pdf"
-            elif hasattr(message.media, "animation"):
-                media_type = "animation"
-                file_name = f"animation_{message.id}.gif"
-            elif hasattr(message.media, "voice"):
-                media_type = "voice"
-                file_name = f"voice_{message.id}.ogg"
-            elif hasattr(message.media, "sticker"):
-                media_type = "sticker"
-                file_name = f"sticker_{message.id}.webp"
-
-        if not media_type or not file_name:
+            
+            if not media_type or not file_name:
+                return None, None
+            
+            compressed_file_name = f'{file_name}_.zstd'
+            compressed_file_path = os.path.join(media_folder, compressed_file_name)
+            
+            # Arquivos existentes
+            if os.path.exists(compressed_file_path):
+                return compressed_file_path, media_type
+            
+            original_file_path = os.path.join(media_folder, file_name)
+            os.makedirs(media_folder, exist_ok=True)
+            
+            message.download_media(file=original_file_path)
+            
+            with open(compressed_file_path, 'wb') as compressed_file:
+                compressor = zstd.ZstdCompressor(level=3, threads=4)
+                with open(original_file_path, 'rb') as temp_file:
+                    compressor.copy_stream(temp_file, compressed_file)
+            
+            # os.remove(original_file_path)
+            return compressed_file_path, media_type
+        except Exception as e:
+            print(f"Erro ao salvar {e}")
             return None, None
-
-        compressed_file_name = f"{file_name}.zstd"
-        compressed_file_path = path.join(media_folder, compressed_file_name)
-
-        if path.exists(compressed_file_path):
-            print(f"A mídia já foi baixada e comprimida: {compressed_file_path}")
-            relative_path = path.relpath(compressed_file_path, base_output_folder)
-            return relative_path, media_type
-
-        temp_path = path.join(media_folder, file_name)
-        total_size = getattr(message.media, "size", None)
-
-        if total_size:
-            with tqdm(
-                total=total_size,
-                unit="B",
-                unit_scale=True,
-                desc=f"Baixando {file_name}",
-            ) as pbar:
-                message.download_media(
-                    file=temp_path,
-                    progress_callback=lambda d, t: pbar.update(d - pbar.n if t else 0),
-                )
-        else:
-            message.download_media(file=temp_path)
-
-        # Comprimir arquivo
-        with open(compressed_file_path, "wb") as compressed_file:
-            compressor = zstd.ZstdCompressor(level=3, threads=4)
-            with open(temp_path, "rb") as temp_file:
-                compressor.copy_stream(temp_file, compressed_file)
-
-        print(f"Arquivo salvo: {compressed_file_path}")
-        return path.relpath(compressed_file_path, base_output_folder), media_type
-
-    except Exception as e:
-        print(f"Erro ao salvar mídia: {e}")
-        return None, None
-
-
-# Função para buscar mensagens
-def fetch_messages(client, chat, offset_days=0):
-    offset_date = datetime.now() - timedelta(days=offset_days)
-    return list(client.iter_messages(chat, offset_date=offset_date, reverse=True))
-
-
-# Processar chats
-def process_chats(client, chats):
-    makedirs(base_output_folder, exist_ok=True)
-
-    for chat in chats:
-        group_folder = path.join(base_output_folder, chat)
-        all_messages = fetch_messages(client, chat, offset_days=0)
-
-        messages_by_date = {}
-        with tqdm(
-            total=len(all_messages),
-            desc=f"Processando {chat}",
-            unit="msg",
-        ) as pbar:
-            for message in all_messages:
-                message_date = (message.date - timedelta(hours=3)).date()
-                media_folder = path.join(group_folder, str(message_date), "media")
-                makedirs(media_folder, exist_ok=True)
-
-                media_path, media_type = save_media(message, media_folder)
-
-                data = {
-                    "id": message.id,
-                    "date": (message.date - timedelta(hours=3)).isoformat(),
-                    "message": message.text,
-                    "media_path": media_path,
-                    "media_type": media_type,
-                }
-
-                if message_date not in messages_by_date:
-                    messages_by_date[message_date] = []
-                messages_by_date[message_date].append(data)
-                pbar.update(1)
-
-        # Salvar mensagens por data
-        for date, messages in messages_by_date.items():
-            output_file = path.join(group_folder, str(date), "metadata.json")
-            with open(output_file, "w", encoding="utf-8") as json_file:
-                json.dump(messages, json_file, ensure_ascii=False, indent=4)
-            print(f"Mensagens salvas em: {output_file}")
-
-
-# Execução principal
-with TelegramClient(SESSION_NAME, API_ID, API_HASH) as client:
-    process_chats(client, chats)
+        
+    def process_message(self, message, chat_folder):
+        """
+        Processando messagem unitaria
+        """
+        message_date = (message.date - timedelta(hours=3)).date()
+        media_folder = os.path.join(chat_folder, str(message_date), 'media')
+        os.makedirs(media_folder, exist_ok=True)
+        media_path, media_type = self.save_media(message, media_folder)
+        
+        
+        data = {
+            "id": message.id,
+            "date": (message.date - timedelta(hours=3)).isoformat(),
+            "message": message.text,
+            "media_path": media_path,
+            "media_type": media_type,
+        }
+        return message_date, data
+    
+    def worker(self, chat_folder):
+        """
+        Processando mensagens em queue
+        """
+        while not self.messages_queue.empty():
+            message = self.messages_queue.get()
+            try:
+                message_date, data = self.process_message(message, chat_folder)
+                output_file = os.path.join(chat_folder, str(message_date), 'metadata.json')
+                os.makedirs(os.path.dirname(output_file), exist_ok=True)
+                
+                with lock: # Bloqueando a escrita do json para não acontecer problema devido aos multiplos threads em execução
+                    if os.path.exists(output_file):
+                        with open(output_file, 'r', encoding='utf-8') as f:
+                            messages = json.load(f)
+                    else:
+                        messages = []
+                    
+                    messages.append(data)
+                    with open(output_file, 'w', encoding='utf-8') as f:
+                        json.dump(messages, f, ensure_ascii=False, indent=4)
+                    
+            except Exception as e:
+                print(f'Erro ao processar mensagem: {e}')
+            finally:
+                self.messages_queue.task_done()
+                
+    def process_chat(self, client, chat):
+        """
+        Processando todas as mensagens do chat
+        """
+        
+        chat_folder = os.path.join(BASE_OUTPUT_FOLDER, chat)
+        os.makedirs(chat_folder, exist_ok=True)
+        
+        all_messages = list(
+            client.iter_messages(chat, offset_date=self.fuso_correto - timedelta(days=1), reverse=True)
+        )
+        for message in all_messages:
+            self.messages_queue.put(message)
+        
+        threads = []
+        for _ in range(self.max_threads):
+            t = Thread(target=self.worker, args=(chat_folder,))
+            t.start()
+            threads.append(t)
+            
+        for t in threads:
+            t.join()
+            
+    def start(self):
+        """
+        Iniciando o processo de download e processamento
+        """
+        with TelegramClient("session_name", API_ID, API_HASH) as client:
+            for chat in self.chats:
+                print(f'Processando chat: {chat}')
+                self.process_chat(client, chat)
+                
+if __name__ == '__main__':
+    chats = ["Portalnoticiasceara"]
+    
+    print(API_ID, API_HASH)
+    downloader =  TelegramDownloader(chats, max_threads=4)
+    downloader.start()
+        
