@@ -1,30 +1,58 @@
-from os import path, makedirs, getenv
-from dotenv import load_dotenv
-from datetime import datetime, timedelta
+import os
 import json
-from tqdm import tqdm
-from telethon.sync import TelegramClient
+from datetime import datetime, timedelta
 import zstandard as zstd
+import asyncio
+from telethon import TelegramClient
+from telethon.errors import RPCError
+from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
-API_ID = int(getenv("TELEGRAM_API_ID", 0))
-API_HASH = getenv("TELEGRAM_API_HASH", "None")
-SESSION_NAME = getenv("SESSION_NAME")
+API_ID = int(os.getenv("TELEGRAM_API_ID", 0))
+API_HASH = os.getenv("TELEGRAM_API_HASH", "None")
+BASE_OUTPUT_FOLDER = "./downloads"
 
-chats = [getenv("TELEGRAM_CHATS")]
-base_output_folder = "/home/nycolasdiaas/Projetos/zarea-de-risco/downloads"
+class TelegramDownloader:
+    def __init__(self, chats, max_workers=10):
+        self.chats = chats
+        self.max_workers = max_workers
+        self.fuso_correto = datetime.utcnow() - timedelta(hours=3)
+        self.queue = asyncio.Queue()
 
-# Função para salvar mídia
-def save_media(message, media_folder):
-    if not message.media:
-        return None, None
+    async def retry_download(self, message, file_path, retries=3, delay=2):
+        """
+        Realiza múltiplas tentativas para baixar mídia
+        
+        conexão ou sessão podem ocasionar problemas
+        """
+        for attempt in range(retries):
+            try:
+                print(f"Tentativa {attempt + 1} para baixar: {file_path}")
+                result = await message.download_media(file=file_path)
+                if result and os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                    return True
+            except RPCError as e:
+                print(f"Erro RPC no download: {e}")
+            except Exception as e:
+                print(f"Erro desconhecido no download: {e}")
+            await asyncio.sleep(delay)
+        return False
 
-    try:
-        media_type = None
-        file_name = None
+    async def save_media(self, message, media_folder):
+        """
+        Salvando as mídias das mensagens.
+        processo de download e compressão juntos, dessa forma economiza tempo e disco,
+        pois o teremos os arquivos em seu tamanho original por menos tempo
+        """
+        if not message.media:
+            print(f"Mensagem ID {message.id} não contém mídia ou a mídia não está disponível.")
+            return None, None
 
-        if isinstance(message.media, message.media.__class__):
+        try:
+            media_type = None
+            file_name = None
             if hasattr(message.media, "photo"):
                 media_type = "photo"
                 file_name = f"photo_{message.id}.jpg"
@@ -37,106 +65,124 @@ def save_media(message, media_folder):
             elif hasattr(message.media, "document"):
                 media_type = "document"
                 file_name = f"document_{message.id}.pdf"
-            elif hasattr(message.media, "animation"):
-                media_type = "animation"
-                file_name = f"animation_{message.id}.gif"
-            elif hasattr(message.media, "voice"):
-                media_type = "voice"
-                file_name = f"voice_{message.id}.ogg"
-            elif hasattr(message.media, "sticker"):
-                media_type = "sticker"
-                file_name = f"sticker_{message.id}.webp"
 
-        if not media_type or not file_name:
+            if not media_type or not file_name:
+                return None, None
+
+            compressed_file_name = f"{file_name}.zstd"
+            compressed_file_path = os.path.join(media_folder, compressed_file_name)
+
+            if os.path.exists(compressed_file_path):
+                print(f"Arquivo já processado: {compressed_file_path}")
+                return compressed_file_path, media_type
+
+            original_file_path = os.path.join(media_folder, file_name)
+            os.makedirs(media_folder, exist_ok=True)
+
+            # Tentar baixar a mídia
+            print(f"Baixando mídia: {original_file_path}")
+            if not await self.retry_download(message, original_file_path):
+                print(f"Erro: Falha no download ou arquivo vazio para: {original_file_path}")
+                return None, None
+
+            # Comprimir o arquivo
+            print(f"Comprimindo mídia: {compressed_file_path}")
+            with open(compressed_file_path, "wb") as compressed_file:
+                compressor = zstd.ZstdCompressor(level=3, threads=4)
+                with open(original_file_path, "rb") as temp_file:
+                    compressor.copy_stream(temp_file, compressed_file)
+
+            if os.path.exists(original_file_path):
+                os.remove(original_file_path)
+
+            return compressed_file_path, media_type
+        except Exception as e:
+            print(f"Erro ao salvar mídia: {e}")
             return None, None
 
-        compressed_file_name = f"{file_name}.zstd"
-        compressed_file_path = path.join(media_folder, compressed_file_name)
+    async def process_message(self, message, chat_folder):
+        """
+        Processando mensagem unitária
+        """
+        message_date = (message.date - timedelta(hours=3)).date()
+        media_folder = os.path.join(chat_folder, str(message_date), "media")
+        os.makedirs(media_folder, exist_ok=True)
 
-        if path.exists(compressed_file_path):
-            print(f"A mídia já foi baixada e comprimida: {compressed_file_path}")
-            relative_path = path.relpath(compressed_file_path, base_output_folder)
-            return relative_path, media_type
+        media_path, media_type = await self.save_media(message, media_folder)
 
-        temp_path = path.join(media_folder, file_name)
-        total_size = getattr(message.media, "size", None)
+        data = {  # temporario
+            "id": message.id,
+            "date": (message.date - timedelta(hours=3)).isoformat(),
+            "message": message.text,
+            "media_path": media_path,
+            "media_type": media_type,
+        }
+        return message_date, data
 
-        if total_size:
-            with tqdm(
-                total=total_size,
-                unit="B",
-                unit_scale=True,
-                desc=f"Baixando {file_name}",
-            ) as pbar:
-                message.download_media(
-                    file=temp_path,
-                    progress_callback=lambda d, t: pbar.update(d - pbar.n if t else 0),
-                )
-        else:
-            message.download_media(file=temp_path)
+    async def worker(self, chat_folder):
+        """
+        Processando mensagens em queue.
+        """
+        while True:
+            message = await self.queue.get()
+            if message is None:
+                break
+            try:
+                message_date, data = await self.process_message(message, chat_folder)
+                output_file = os.path.join(chat_folder, str(message_date), "metadata.json")
+                os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
-        # Comprimir arquivo
-        with open(compressed_file_path, "wb") as compressed_file:
-            compressor = zstd.ZstdCompressor(level=3, threads=4)
-            with open(temp_path, "rb") as temp_file:
-                compressor.copy_stream(temp_file, compressed_file)
+                async with asyncio.Lock():
+                    if os.path.exists(output_file):
+                        with open(output_file, "r", encoding="utf-8") as f:
+                            messages = json.load(f)
+                    else:
+                        messages = []
 
-        print(f"Arquivo salvo: {compressed_file_path}")
-        return path.relpath(compressed_file_path, base_output_folder), media_type
+                    messages.append(data)
+                    with open(output_file, "w", encoding="utf-8") as f:
+                        json.dump(messages, f, ensure_ascii=False, indent=4)
 
-    except Exception as e:
-        print(f"Erro ao salvar mídia: {e}")
-        return None, None
+            except Exception as e:
+                print(f"Erro ao processar mensagem: {e}")
+            finally:
+                self.queue.task_done()
 
+    async def process_chat(self, client, chat):
+        """
+        Processando todas as mensagens do chat.
+        """
+        chat_folder = os.path.join(BASE_OUTPUT_FOLDER, chat)
+        os.makedirs(chat_folder, exist_ok=True)
 
-# Função para buscar mensagens
-def fetch_messages(client, chat, offset_days=0):
-    offset_date = datetime.now() - timedelta(days=offset_days)
-    return list(client.iter_messages(chat, offset_date=offset_date, reverse=True))
+        async for message in client.iter_messages(chat, offset_date=self.fuso_correto - timedelta(weeks=4), reverse=True):
+            await self.queue.put(message)
 
+        workers = [asyncio.create_task(self.worker(chat_folder)) for _ in range(self.max_workers)]
 
-# Processar chats
-def process_chats(client, chats):
-    makedirs(base_output_folder, exist_ok=True)
+        await self.queue.join()
+        for _ in range(self.max_workers):
+            await self.queue.put(None)
+        await asyncio.gather(*workers)
 
-    for chat in chats:
-        group_folder = path.join(base_output_folder, chat)
-        all_messages = fetch_messages(client, chat, offset_days=0)
-
-        messages_by_date = {}
-        with tqdm(
-            total=len(all_messages),
-            desc=f"Processando {chat}",
-            unit="msg",
-        ) as pbar:
-            for message in all_messages:
-                message_date = (message.date - timedelta(hours=3)).date()
-                media_folder = path.join(group_folder, str(message_date), "media")
-                makedirs(media_folder, exist_ok=True)
-
-                media_path, media_type = save_media(message, media_folder)
-
-                data = {
-                    "id": message.id,
-                    "date": (message.date - timedelta(hours=3)).isoformat(),
-                    "message": message.text,
-                    "media_path": media_path,
-                    "media_type": media_type,
-                }
-
-                if message_date not in messages_by_date:
-                    messages_by_date[message_date] = []
-                messages_by_date[message_date].append(data)
-                pbar.update(1)
-
-        # Salvar mensagens por data
-        for date, messages in messages_by_date.items():
-            output_file = path.join(group_folder, str(date), "metadata.json")
-            with open(output_file, "w", encoding="utf-8") as json_file:
-                json.dump(messages, json_file, ensure_ascii=False, indent=4)
-            print(f"Mensagens salvas em: {output_file}")
+    async def start(self):
+        """
+        Iniciando o processo de download e processamento.
+        """
+        async with TelegramClient("session_name", API_ID, API_HASH) as client:
+            for chat in self.chats:
+                print(f"Processando chat: {chat}")
+                await self.process_chat(client, chat)
 
 
-# Execução principal
-with TelegramClient(SESSION_NAME, API_ID, API_HASH) as client:
-    process_chats(client, chats)
+if __name__ == "__main__":
+    chats = ["Portalnoticiasceara"]
+
+    downloader = TelegramDownloader(chats, max_workers=10)
+    
+    start_time = time.time()
+    asyncio.run(downloader.start())
+    end_time = time.time()
+
+    exec_total_time = end_time - start_time
+    print(f"Tempo total de execução: {exec_total_time:.2f} segundos")
