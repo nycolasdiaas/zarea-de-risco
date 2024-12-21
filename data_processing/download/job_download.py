@@ -2,32 +2,54 @@ import os
 import json
 from datetime import datetime, timedelta
 import zstandard as zstd
-from queue import Queue
-from threading import Thread, Lock
+import asyncio
 from telethon import TelegramClient
+from telethon.errors import RPCError
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
+
 API_ID = int(os.getenv("TELEGRAM_API_ID", 0))
 API_HASH = os.getenv("TELEGRAM_API_HASH", "None")
 BASE_OUTPUT_FOLDER = "./downloads"
-lock = Lock()
 
 class TelegramDownloader:
-    def __init__(self, chats, max_threads=4):
+    def __init__(self, chats, max_workers=10):
         self.chats = chats
-        self.messages_queue = Queue()
-        self.max_threads = max_threads
+        self.max_workers = max_workers
         self.fuso_correto = datetime.utcnow() - timedelta(hours=3)
-    
-    def save_media(self, message, media_folder):
+        self.queue = asyncio.Queue()
+
+    async def retry_download(self, message, file_path, retries=3, delay=2):
         """
-        Salvando as mídias das mensagens
-        """
+        Realiza múltiplas tentativas para baixar mídia
         
+        conexão ou sessão podem ocasionar problemas
+        """
+        for attempt in range(retries):
+            try:
+                print(f"Tentativa {attempt + 1} para baixar: {file_path}")
+                result = await message.download_media(file=file_path)
+                if result and os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                    return True
+            except RPCError as e:
+                print(f"Erro RPC no download: {e}")
+            except Exception as e:
+                print(f"Erro desconhecido no download: {e}")
+            await asyncio.sleep(delay)
+        return False
+
+    async def save_media(self, message, media_folder):
+        """
+        Salvando as mídias das mensagens.
+        processo de download e compressão juntos, dessa forma economiza tempo e disco,
+        pois o teremos os arquivos em seu tamanho original por menos tempo
+        """
         if not message.media:
+            print(f"Mensagem ID {message.id} não contém mídia ou a mídia não está disponível.")
             return None, None
-        
+
         try:
             media_type = None
             file_name = None
@@ -43,44 +65,52 @@ class TelegramDownloader:
             elif hasattr(message.media, "document"):
                 media_type = "document"
                 file_name = f"document_{message.id}.pdf"
-            
+
             if not media_type or not file_name:
                 return None, None
-            
-            compressed_file_name = f'{file_name}_.zstd'
+
+            compressed_file_name = f"{file_name}.zstd"
             compressed_file_path = os.path.join(media_folder, compressed_file_name)
-            
-            # Arquivos existentes
+
             if os.path.exists(compressed_file_path):
+                print(f"Arquivo já processado: {compressed_file_path}")
                 return compressed_file_path, media_type
-            
+
             original_file_path = os.path.join(media_folder, file_name)
             os.makedirs(media_folder, exist_ok=True)
-            
-            message.download_media(file=original_file_path)
-            
-            with open(compressed_file_path, 'wb') as compressed_file:
+
+            # Tentar baixar a mídia
+            print(f"Baixando mídia: {original_file_path}")
+            if not await self.retry_download(message, original_file_path):
+                print(f"Erro: Falha no download ou arquivo vazio para: {original_file_path}")
+                return None, None
+
+            # Comprimir o arquivo
+            print(f"Comprimindo mídia: {compressed_file_path}")
+            with open(compressed_file_path, "wb") as compressed_file:
                 compressor = zstd.ZstdCompressor(level=3, threads=4)
-                with open(original_file_path, 'rb') as temp_file:
+                with open(original_file_path, "rb") as temp_file:
                     compressor.copy_stream(temp_file, compressed_file)
-            
-            # os.remove(original_file_path)
+
+            if os.path.exists(original_file_path):
+                os.remove(original_file_path)
+
             return compressed_file_path, media_type
         except Exception as e:
-            print(f"Erro ao salvar {e}")
+            print(f"Erro ao salvar mídia: {e}")
             return None, None
-        
-    def process_message(self, message, chat_folder):
+
+    async def process_message(self, message, chat_folder):
         """
-        Processando messagem unitaria
+        Processando mensagem unitária
         """
         message_date = (message.date - timedelta(hours=3)).date()
-        media_folder = os.path.join(chat_folder, str(message_date), 'media')
+        media_folder = os.path.join(chat_folder, str(message_date), "media")
         os.makedirs(media_folder, exist_ok=True)
-        media_path, media_type = self.save_media(message, media_folder)
-        
-        
-        data = {
+
+        media_path, media_type = await self.save_media(message, media_folder)
+
+        data = {  # temporario
             "id": message.id,
             "date": (message.date - timedelta(hours=3)).isoformat(),
             "message": message.text,
@@ -88,70 +118,71 @@ class TelegramDownloader:
             "media_type": media_type,
         }
         return message_date, data
-    
-    def worker(self, chat_folder):
+
+    async def worker(self, chat_folder):
         """
-        Processando mensagens em queue
+        Processando mensagens em queue.
         """
-        while not self.messages_queue.empty():
-            message = self.messages_queue.get()
+        while True:
+            message = await self.queue.get()
+            if message is None:
+                break
             try:
-                message_date, data = self.process_message(message, chat_folder)
-                output_file = os.path.join(chat_folder, str(message_date), 'metadata.json')
+                message_date, data = await self.process_message(message, chat_folder)
+                output_file = os.path.join(chat_folder, str(message_date), "metadata.json")
                 os.makedirs(os.path.dirname(output_file), exist_ok=True)
-                
-                with lock: # Bloqueando a escrita do json para não acontecer problema devido aos multiplos threads em execução
+
+                async with asyncio.Lock():
                     if os.path.exists(output_file):
-                        with open(output_file, 'r', encoding='utf-8') as f:
+                        with open(output_file, "r", encoding="utf-8") as f:
                             messages = json.load(f)
                     else:
                         messages = []
-                    
+
                     messages.append(data)
-                    with open(output_file, 'w', encoding='utf-8') as f:
+                    with open(output_file, "w", encoding="utf-8") as f:
                         json.dump(messages, f, ensure_ascii=False, indent=4)
-                    
+
             except Exception as e:
-                print(f'Erro ao processar mensagem: {e}')
+                print(f"Erro ao processar mensagem: {e}")
             finally:
-                self.messages_queue.task_done()
-                
-    def process_chat(self, client, chat):
+                self.queue.task_done()
+
+    async def process_chat(self, client, chat):
         """
-        Processando todas as mensagens do chat
+        Processando todas as mensagens do chat.
         """
-        
         chat_folder = os.path.join(BASE_OUTPUT_FOLDER, chat)
         os.makedirs(chat_folder, exist_ok=True)
-        
-        all_messages = list(
-            client.iter_messages(chat, offset_date=self.fuso_correto - timedelta(days=1), reverse=True)
-        )
-        for message in all_messages:
-            self.messages_queue.put(message)
-        
-        threads = []
-        for _ in range(self.max_threads):
-            t = Thread(target=self.worker, args=(chat_folder,))
-            t.start()
-            threads.append(t)
-            
-        for t in threads:
-            t.join()
-            
-    def start(self):
+
+        async for message in client.iter_messages(chat, offset_date=self.fuso_correto - timedelta(weeks=4), reverse=True):
+            await self.queue.put(message)
+
+        workers = [asyncio.create_task(self.worker(chat_folder)) for _ in range(self.max_workers)]
+
+        await self.queue.join()
+        for _ in range(self.max_workers):
+            await self.queue.put(None)
+        await asyncio.gather(*workers)
+
+    async def start(self):
         """
-        Iniciando o processo de download e processamento
+        Iniciando o processo de download e processamento.
         """
-        with TelegramClient("session_name", API_ID, API_HASH) as client:
+        async with TelegramClient("session_name", API_ID, API_HASH) as client:
             for chat in self.chats:
-                print(f'Processando chat: {chat}')
-                self.process_chat(client, chat)
-                
-if __name__ == '__main__':
+                print(f"Processando chat: {chat}")
+                await self.process_chat(client, chat)
+
+
+if __name__ == "__main__":
     chats = ["Portalnoticiasceara"]
+
+    downloader = TelegramDownloader(chats, max_workers=10)
     
-    print(API_ID, API_HASH)
-    downloader =  TelegramDownloader(chats, max_threads=4)
-    downloader.start()
-        
+    start_time = time.time()
+    asyncio.run(downloader.start())
+    end_time = time.time()
+
+    exec_total_time = end_time - start_time
+    print(f"Tempo total de execução: {exec_total_time:.2f} segundos")
