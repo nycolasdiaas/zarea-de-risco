@@ -19,7 +19,7 @@ COPY pyproject.toml poetry.lock ./
 
 COPY backend/ ./backend/
 
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 EXPOSE 5000
 
