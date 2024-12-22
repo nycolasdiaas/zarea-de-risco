@@ -54,12 +54,18 @@ class TelegramDownloader:
         elif hasattr(message.media, "video"):
             media_type = "video"
             file_name = f"video_{message.id}.mp4"
+        elif hasattr(message.media, "document"):
+            if hasattr(message.media.document, "mime_type") and message.media.document.mime_type.startswith("audio/"):
+                media_type = "audio"
+                file_name = f"audio_{message.id}.mp3"
+            elif hasattr(message.media.document, "attributes"):
+                for attr in message.media.document.attributes:
+                    if isinstance(attr, type(message.media.document)):
+                        media_type = "audio"
+                        file_name = f"voice_{message.id}.ogg"
         elif hasattr(message.media, "audio"):
             media_type = "audio"
             file_name = f"audio_{message.id}.mp3"
-        elif hasattr(message.media, "document"):
-            media_type = "document"
-            file_name = f"document_{message.id}.pdf"
 
         if not media_type or not file_name:
             return None, None
@@ -102,12 +108,116 @@ class TelegramDownloader:
         media_path, media_type = await self.save_media(message, media_folder)
 
         data = {
-            "id": message.id,
-            "date": (message.date - timedelta(hours=3)).isoformat(),
-            "message": message.text,
-            "media_path": media_path,
-            "media_type": media_type,
-        }
+                    "id": message.id,
+                    "peer_id": {
+                        "type": "PeerChannel",
+                        "channel_id": (
+                            message.peer_id.channel_id
+                            if hasattr(message.peer_id, "channel_id")
+                            else None
+                        ),
+                    },
+                    "date": (message.date - timedelta(hours=3)).isoformat(),
+                    "message": message.text,
+                    "reply_to": {
+                        "reply_to_msg_id": (
+                            message.reply_to.reply_to_msg_id
+                            if message.reply_to
+                            else None
+                        )
+                    },
+                    "flags": {
+                        "out": message.out,
+                        "mentioned": message.mentioned,
+                        "media_unread": message.media_unread,
+                        "silent": message.silent,
+                        "post": message.post,
+                        "from_scheduled": message.from_scheduled,
+                        "legacy": message.legacy,
+                        "edit_hide": message.edit_hide,
+                        "pinned": message.pinned,
+                        "noforwards": message.noforwards,
+                        "invert_media": message.invert_media,
+                        "offline": message.offline,
+                        "video_processing_pending": message.video_processing_pending,
+                    },
+                    "from_id": message.sender_id,
+                    "media": (
+                        {
+                            "type": "MessageMediaPhoto" if message.media else None,
+                            "photo": (
+                                {
+                                    "id": (
+                                        message.media.photo.id
+                                        if message.media
+                                        and hasattr(message.media, "photo")
+                                        else None
+                                    ),
+                                    "access_hash": (
+                                        message.media.photo.access_hash
+                                        if message.media
+                                        and hasattr(message.media, "photo")
+                                        else None
+                                    ),
+                                    "file_reference": None,
+                                    "date": (
+                                        (message.media.photo.date - timedelta(hours=3)).isoformat()
+                                        if message.media
+                                        and hasattr(message.media, "photo")
+                                        else None
+                                    ),
+                                    "sizes": None,
+                                    "dc_id": None,
+                                    "has_stickers": None,
+                                    "video_sizes": None,
+                                }
+                                if message.media
+                                else None
+                            ),
+                            "ttl_seconds": None,
+                        }
+                        if message.media
+                        else None
+                    ),
+                    "media_path": media_path if media_path else None,
+                    "views": message.views,
+                    "forwards": message.forwards,
+                    "replies": (
+                        {
+                            "replies": (
+                                message.replies.replies if message.replies else None
+                            ),
+                            "replies_pts": (
+                                message.replies.replies_pts if message.replies else None
+                            ),
+                            "comments": (
+                                message.replies.comments if message.replies else None
+                            ),
+                            "recent_repliers": [],
+                            "channel_id": (
+                                message.replies.channel_id if message.replies else None
+                            ),
+                            "max_id": None,
+                            "read_max_id": None,
+                        }
+                        if message.replies
+                        else None
+                    ),
+                    "edit_date": (
+                        (message.edit_date - timedelta(hours=3)).isoformat() if message.edit_date else None
+                    ),
+                    "reactions": (
+                        [
+                            {
+                                "reaction": reaction.reaction.emoticon,
+                                "count": reaction.count,
+                            }
+                            for reaction in message.reactions.results
+                        ]
+                        if message.reactions
+                        else []
+                    ),
+                }
         return message_date, data
 
     async def worker(self, chat_folder):
