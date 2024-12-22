@@ -7,6 +7,7 @@ from telethon import TelegramClient
 from telethon.errors import RPCError
 from dotenv import load_dotenv
 import time
+import tarfile
 
 load_dotenv()
 
@@ -88,7 +89,7 @@ class TelegramDownloader:
             # Comprimir o arquivo
             print(f"Comprimindo mídia: {compressed_file_path}")
             with open(compressed_file_path, "wb") as compressed_file:
-                compressor = zstd.ZstdCompressor(level=3, threads=4)
+                compressor = zstd.ZstdCompressor(level=15, threads=4)
                 with open(original_file_path, "rb") as temp_file:
                     compressor.copy_stream(temp_file, compressed_file)
 
@@ -147,6 +148,61 @@ class TelegramDownloader:
                 print(f"Erro ao processar mensagem: {e}")
             finally:
                 self.queue.task_done()
+                
+    async def group_media_by_date(self, chat_folder):
+        """
+        Agrupa mídias compactadas por dia em arquivos TAR.ZSTD dentro da pasta correta.
+        """
+        for root, dirs, _ in os.walk(chat_folder):
+            # Filtrar apenas subpastas com estrutura de data
+            for folder in dirs:
+                date_folder = os.path.join(root, folder)
+                
+                # Verificar se estamos dentro da estrutura correta de data
+                if not os.path.isdir(date_folder) or not folder.startswith("20"):
+                    continue
+
+                media_folder = os.path.join(date_folder, "media")
+                if not os.path.exists(media_folder):
+                    continue
+
+                tar_file_path = os.path.join(media_folder, "media.tar")
+                tar_compressed_path = f"{tar_file_path}.zstd"
+
+                # Verificar se o arquivo já existe
+                if os.path.exists(tar_compressed_path):
+                    print(f"Arquivo TAR.ZSTD já existente: {tar_compressed_path}")
+                    continue
+
+                print(f"Agrupando mídias em: {tar_compressed_path}")
+                try:
+                    # Criar o arquivo TAR
+                    with tarfile.open(tar_file_path, "w") as tar:
+                        files_to_remove = []
+                        for file_name in os.listdir(media_folder):
+                            file_path = os.path.join(media_folder, file_name)
+                            if file_path.endswith(".zstd"):
+                                tar.add(file_path, arcname=file_name)
+                                files_to_remove.append(file_path)
+
+                    # Comprimir o TAR com zstd
+                    if os.path.exists(tar_file_path):
+                        with open(tar_file_path, "rb") as tar_file:
+                            with open(tar_compressed_path, "wb") as compressed_file:
+                                compressor = zstd.ZstdCompressor(level=3)
+                                compressor.copy_stream(tar_file, compressed_file)
+
+                        # Remover o TAR não comprimido
+                        os.remove(tar_file_path)
+
+                        # Remover os arquivos originais
+                        for file_path in files_to_remove:
+                            os.remove(file_path)
+                    else:
+                        print(f"Erro: Arquivo TAR não foi criado corretamente em {tar_file_path}")
+
+                except Exception as e:
+                    print(f"Erro ao agrupar mídias em TAR.ZSTD: {e}")
 
     async def process_chat(self, client, chat):
         """
@@ -155,7 +211,7 @@ class TelegramDownloader:
         chat_folder = os.path.join(BASE_OUTPUT_FOLDER, chat)
         os.makedirs(chat_folder, exist_ok=True)
 
-        async for message in client.iter_messages(chat, offset_date=self.fuso_correto - timedelta(weeks=4), reverse=True):
+        async for message in client.iter_messages(chat, offset_date=self.fuso_correto - timedelta(days=0), reverse=True):
             await self.queue.put(message)
 
         workers = [asyncio.create_task(self.worker(chat_folder)) for _ in range(self.max_workers)]
@@ -164,6 +220,8 @@ class TelegramDownloader:
         for _ in range(self.max_workers):
             await self.queue.put(None)
         await asyncio.gather(*workers)
+        
+        await self.group_media_by_date(chat_folder)
 
     async def start(self):
         """
