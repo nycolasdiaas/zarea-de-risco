@@ -68,7 +68,7 @@ class TelegramDownloader(BaseTelegramDownloader):
                             message.reply_to.reply_to_msg_id
                             if message.reply_to
                             else None
-                        ),
+                        )
                     },
                     "flags": {
                         "out": message.out,
