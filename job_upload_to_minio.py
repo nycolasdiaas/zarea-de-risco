@@ -8,9 +8,9 @@ from exceptions import FailUploadException
 load_dotenv()
 
 minio_client = Minio(
-    endpoint=os.getenv("MINIO_ENDPOINT") or "none",
-    access_key=os.getenv("MINIO_ACCESS_KEY"),
-    secret_key=os.getenv("MINIO_SECRECT_KEY"),
+    endpoint=os.getenv("MINIO_ENDPOINT") or "Minio endpoint not found.",
+    access_key=os.getenv("MINIO_ACCESS_KEY") or "access key not found.",
+    secret_key=os.getenv("MINIO_SECRET_KEY") or "secret key not found.",
     secure=False,
 )
 
