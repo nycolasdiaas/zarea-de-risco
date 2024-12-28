@@ -82,13 +82,13 @@ zarea_rm = { cmd = "docker container rm zarea", help = "remove flask app"}
 
 # minio
 minio = { cmd = "docker run -d -p 9000:9000 -p 9090:9090 --name minio -v /mnt/wsl/minio/data:/data -v /mnt/wsl/minio/config:/root/.minio minio/minio server /data --console-address ':9090'", help = "run minio"}
-start_min = { cmd = "docker start minio", help = "start minio container" }
-stop_min = { cmd = "docker stop minio", help = "stop minio container" }
-rm_min = { cmd = "docker container rm minio", help = "remove minio container" }
+min_start = { cmd = "docker start minio", help = "start minio container" }
+min_stop = { cmd = "docker stop minio", help = "stop minio container" }
+min_rm = { cmd = "docker container rm minio", help = "remove minio container" }
 
 # jobs
 job_up = { cmd = "python ./job_upload_to_minio.py", help = "execute the upload file"}
-job_down = { cmd = "python ./job_download_data.py.py", help = "execute the download file"}
+job_down = { cmd = "python ./job_download_data.py", help = "execute the download file"}
 
 # docker general
 ps = {cmd = "docker ps -a", help = "show all the containers running or not"}
