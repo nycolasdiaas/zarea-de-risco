@@ -3,6 +3,8 @@
 downloads/
 .venv/
 logs/
+*.json
+token.pickle
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,flask,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask,dotenv
