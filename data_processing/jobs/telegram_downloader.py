@@ -209,7 +209,7 @@ class TelegramDownloader(BaseTelegramDownloader):
         total_start_time = time.time()
         async with TelegramClient("session_name", API_ID, API_HASH) as client:
             # Calcular o intervalo de datas
-            offset_date = self.calculate_date_range()
+            offset_date = self.calculate_offset_date()
 
             for chat in self.chats:
                 print(f"Processando mensagens para o chat: {chat}\nDe {offset_date}")
@@ -218,24 +218,23 @@ class TelegramDownloader(BaseTelegramDownloader):
         total_elapsed_time = time.time() - total_start_time  # Tempo total decorrido
         print(f"Tempo total de execução: {total_elapsed_time:.2f} segundos")
 
-    def calculate_date_range(self):
+    def calculate_offset_date(self):
         """
-        Calcula o intervalo de datas (min_date e max_date) com base no DAYS_OFFSET.
-
-        **Observação:** Nesta versão, não há restrições de data mínima ou máxima.
+        Calcula a data mínima (offset_date) com base no DAYS_OFFSET.
         """
-
+        # Calcula a data mínima como DAYS_OFFSET dias atrás
         tz_offset = timedelta(hours=TIMEZONE_OFFSET)
-        min_date = datetime.now() - timedelta(days=DAYS_OFFSET)
-        min_date += tz_offset  
+        offset_date = datetime.now() - timedelta(days=DAYS_OFFSET)
+        offset_date = offset_date.replace(hour=0, minute=0, second=0, microsecond=0) + tz_offset
+        return offset_date
 
-        return min_date
+
 
     async def process_chat(self, client, chat, offset_date):
         """
         Processa mensagens de um chat dentro de um intervalo de datas.
         """
-        async for message in client.iter_messages(chat, offset_date=offset_date):
+        async for message in client.iter_messages(chat, offset_date=offset_date, reverse=True):
             # Ajusta o timezone da mensagem para offset-naive
             message_date_adjusted = (message.date - timedelta(hours=TIMEZONE_OFFSET)).replace(tzinfo=None)
 
