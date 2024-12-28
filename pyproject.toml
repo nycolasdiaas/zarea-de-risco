@@ -67,6 +67,9 @@ black = "^24.10.0"
 taskipy = "^1.14.1"
 black = "^24.10.0"
 flake8 = "^7.1.1"
+google-auth = "^2.37.0"
+google-api-python-client = "^2.156.0"
+google-auth-oauthlib = "^1.2.1"
 
 [build-system]
 requires = ["poetry-core"]
