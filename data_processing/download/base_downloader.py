@@ -227,7 +227,7 @@ class BaseTelegramDownloader:
         """
         Processa mensagens de um chat com base na data de offset.
         """
-        chat_folder = os.path.join(BASE_OUTPUT_FOLDER, chat)
+        chat_folder = os.path.join(BASE_OUTPUT_FOLDER, chat, "past_dates")
         os.makedirs(chat_folder, exist_ok=True)
 
         async for message in client.iter_messages(chat, offset_date=offset_date, reverse=True):
