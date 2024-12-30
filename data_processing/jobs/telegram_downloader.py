@@ -18,6 +18,7 @@ DAYS_OFFSET = int(os.getenv("DAYS_OFFSET", 0))
 MIN_DATE = os.getenv("MIN_DATE", None)
 MAX_DATE = os.getenv("MAX_DATE", None)
 TIMEZONE_OFFSET = 3  # Fuso horário em horas
+SESSION_NAME = os.getenv("SESSION_NAME", "session_name")
 
 
 class TelegramDownloader(BaseTelegramDownloader):
@@ -214,7 +215,7 @@ class TelegramDownloader(BaseTelegramDownloader):
         Processa mensagens com base no intervalo de datas configurado.
         """
         total_start_time = time.time()
-        async with TelegramClient("session_name", API_ID, API_HASH) as client:
+        async with TelegramClient(SESSION_NAME, API_ID, API_HASH) as client:
             # Calcular o intervalo de datas
             offset_date = self.calculate_offset_date()
 
