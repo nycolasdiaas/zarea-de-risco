@@ -1,8 +1,12 @@
 import os
+import argparse
 from minio import Minio
 from minio.error import S3Error
 from dotenv import load_dotenv
-
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
+sys.path.append(parent_dir)
 from exceptions import FailUploadException
 
 load_dotenv()
@@ -11,20 +15,16 @@ minio_client = Minio(
     endpoint=os.getenv("MINIO_ENDPOINT") or "Minio endpoint not found.",
     access_key=os.getenv("MINIO_ACCESS_KEY") or "access key not found.",
     secret_key=os.getenv("MINIO_SECRET_KEY") or "secret key not found.",
-    secure=False,
+    secure=False
 )
 
 
 bucket_name = os.getenv("MINIO_BUCKET_NAME", "None")
-base_output_folder = "./downloads/"
+# base_output_folder = "./downloads/"
 
 
 def upload_to_minio(file_path, file_name, remote_folder):
     try:
-        if not minio_client.bucket_exists(bucket_name):
-            print(f"Bucket '{bucket_name}' não existe. Criando...")
-            minio_client.make_bucket(bucket_name)
-
         remote_path = os.path.join(remote_folder, file_name).replace(os.sep, "/")
 
         # upload
@@ -44,21 +44,32 @@ def upload_folder_to_minio(local_folder, remote_folder):
             relative_path = os.path.relpath(local_file_path, local_folder)
             upload_to_minio(local_file_path, relative_path, remote_folder)
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--base_output_folder',
+        type=str,
+        default='./downloads/',
+        help='Pasta base para upload no minIo'
+    )
+    
+    args = parser.parse_args()
+    base_output_folder = args.base_output_folder
+    
+    os.makedirs(base_output_folder, exist_ok=True)
 
-os.makedirs(base_output_folder, exist_ok=True)
 
+    try:
+        print(f"Access Key: {os.getenv('MINIO_ACCESS_KEY')}")
+        print(f"Secret Key: {os.getenv('MINIO_SECRET_KEY')}")
+        for chat in os.listdir(base_output_folder):
+            group_folder = os.path.join(base_output_folder, chat)
+            if os.path.isdir(group_folder):
+                for current_date in os.listdir(group_folder):
+                    date_folder = os.path.join(group_folder, current_date)
+                    if os.path.isdir(date_folder):
+                        remote_folder = f"{chat}/{current_date}"
+                        upload_folder_to_minio(date_folder, remote_folder)
 
-try:
-    print(f"Access Key: {os.getenv('MINIO_ACCESS_KEY')}")
-    print(f"Secret Key: {os.getenv('MINIO_SECRECT_KEY')}")
-    for chat in os.listdir(base_output_folder):
-        group_folder = os.path.join(base_output_folder, chat)
-        if os.path.isdir(group_folder):
-            for current_date in os.listdir(group_folder):
-                date_folder = os.path.join(group_folder, current_date)
-                if os.path.isdir(date_folder):
-                    remote_folder = f"{chat}/{current_date}"
-                    upload_folder_to_minio(date_folder, remote_folder)
-
-except S3Error as e:
-    raise FailUploadException(f"Erro ao subir os arquivos para o MinIO: {e}")
+    except S3Error as e:
+        raise FailUploadException(f"Erro ao subir os arquivos para o MinIO: {e}")
