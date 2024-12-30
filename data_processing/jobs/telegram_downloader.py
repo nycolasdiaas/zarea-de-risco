@@ -28,7 +28,7 @@ class TelegramDownloader(BaseTelegramDownloader):
         # Ajusta a data da mensagem para incluir o fuso horário
         message_date = (message.date + timedelta(hours=TIMEZONE_OFFSET)).strftime("%Y-%m-%d")
 
-        base_folder = os.path.join(media_folder, chat_name, message_date)
+        base_folder = os.path.join(media_folder, chat_name,"past_dates", message_date)
         media_folder = os.path.join(base_folder, "media")
         os.makedirs(media_folder, exist_ok=True)
 
@@ -163,7 +163,14 @@ class TelegramDownloader(BaseTelegramDownloader):
                     ),
                 }
         
-        existing_metadata[media_id] = data
+        # existing_metadata[media_id] = data
+        # Verifica se os metadados já existem como uma lista
+        if isinstance(existing_metadata, dict):
+            # Se estiver no formato antigo (dicionário), converte para lista
+            existing_metadata = list(existing_metadata.values())
+
+        # Adiciona o novo registro à lista
+        existing_metadata.append(data)
 
         # Salvar metadados atualizados no arquivo metadata.json
         with open(metadata_path, "w", encoding="utf-8") as meta_file:
