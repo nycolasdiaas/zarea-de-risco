@@ -1,6 +1,7 @@
 from download.base_downloader import BaseTelegramDownloader
 from telethon import TelegramClient
 import os
+import time
 from dotenv import load_dotenv
 from datetime import timedelta
 
@@ -16,9 +17,12 @@ class TelegramDownloaderSimple(BaseTelegramDownloader):
         """
         Processa apenas mensagens do dia atual.
         """
+        total_start_time = time.time()
         async with TelegramClient(SESSION_NAME, API_ID, API_HASH) as client:
             for chat in self.chats:
                 print(f"Processando mensagens do dia atual para o chat: {chat}")
                 # offset_date = self.fuso_correto
                 offset_date = (self.fuso_correto - timedelta(days=1))
                 await self.process_chat(client, chat, offset_date)
+        total_elapsed_time = time.time() - total_start_time  # Tempo total decorrido
+        print(f"Tempo total de execução: {total_elapsed_time:.2f} segundos")
