@@ -21,14 +21,13 @@ class MetadataService:
 
         self.bucket_name = bucket_name
 
-    # TODO: need to create the minio path to be used by this function.
     def get_daily_metadata(self) -> BaseHTTPResponse:
         try:
             client = self.__service__.get_client()
 
             return client.get_object(
                 bucket_name=self.bucket_name,
-                object_name="add_daily_data_path_in_minio",
+                object_name="Portalnoticiasceara/noticias_recentes_ultimas_24_horas/noticias_recentes_ultimas_24_horas.json",
             )
         except MaxRetryError as e:
             raise Exception(f"Máximo de tentativas atingido: {e}")
@@ -40,6 +39,41 @@ class MetadataService:
             return client.get_object(
                 bucket_name=self.bucket_name,
                 object_name=f"Portalnoticiasceara/{date}/metadata.json",
+            )
+        except MaxRetryError as e:
+            raise Exception(f"Máximo de tentativas atingido: {e}")
+
+    def get_monthly_metadata(self) -> BaseHTTPResponse:
+        try:
+            client = self.__service__.get_client()
+
+            return client.get_object(
+                bucket_name=self.bucket_name,
+                object_name="Portalnoticiasceara/noticias_recentes_ultimo_mes/noticias_recentes_ultimo_mes.json",
+            )
+        except MaxRetryError as e:
+            raise Exception(f"Máximo de tentativas atingido: {e}")
+
+    def get_last_seven_days_metadata(self) -> BaseHTTPResponse:
+        try:
+            client = self.__service__.get_client()
+
+            return client.get_object(
+                bucket_name=self.bucket_name,
+                object_name="Portalnoticiasceara/noticias_recentes_ultimos_7_dias/noticias_recentes_ultimos_7_dias.json",
+            )
+        except MaxRetryError as e:
+            raise Exception(f"Máximo de tentativas atingido: {e}")
+
+    def get_metadata_from_location(
+        self, state: str, city: str, neighborhood: str, street: str
+    ) -> BaseHTTPResponse:
+        try:
+            client = self.__service__.get_client()
+
+            return client.get_object(
+                bucket_name=self.bucket_name,
+                object_name=f"Portalnoticiasceara/uf/{state}/{city}/{neighborhood}/{street}.json",
             )
         except MaxRetryError as e:
             raise Exception(f"Máximo de tentativas atingido: {e}")
