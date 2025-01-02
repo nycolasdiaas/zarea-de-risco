@@ -28,6 +28,7 @@ class GetDailyMetadata(BaseMetadataResource):
         super().__init__()
 
     def get(self):
+        response = None
         try:
             response = MetadataService(
                 self.endpoint,
@@ -39,6 +40,10 @@ class GetDailyMetadata(BaseMetadataResource):
             return response.json()
         except Exception as e:
             return {"error": str(e)}, 500
+        finally:
+            if response:
+                response.close()
+                response.release_conn()
 
 
 class GetMetadataFromDate(BaseMetadataResource):
@@ -46,6 +51,7 @@ class GetMetadataFromDate(BaseMetadataResource):
         super().__init__()
 
     def get(self, date: str):
+        response = None
         try:
             response = MetadataService(
                 self.endpoint,
@@ -57,6 +63,10 @@ class GetMetadataFromDate(BaseMetadataResource):
             return response.json()
         except Exception as e:
             return {"error": str(e)}, 500
+        finally:
+            if response:
+                response.close()
+                response.release_conn()
 
 
 class GetMonthlyMetadata(BaseMetadataResource):
@@ -82,6 +92,7 @@ class GetLastSevenDaysMetadata(BaseMetadataResource):
         super().__init__()
 
     def get(self):
+        response = None
         try:
             response = MetadataService(
                 self.endpoint,
@@ -93,6 +104,10 @@ class GetLastSevenDaysMetadata(BaseMetadataResource):
             return response.json()
         except Exception as e:
             return {"error": str(e)}, 500
+        finally:
+            if response:
+                response.close()
+                response.release_conn()
 
 
 class GetMetadataFromLocation(BaseMetadataResource):
@@ -100,6 +115,7 @@ class GetMetadataFromLocation(BaseMetadataResource):
         super().__init__()
 
     def get(self, state: str, city: str, neigborhood: str, street: str):
+        response = None
         try:
             response = MetadataService(
                 self.endpoint,
@@ -111,3 +127,7 @@ class GetMetadataFromLocation(BaseMetadataResource):
             return response.json()
         except Exception as e:
             return {"error": str(e)}, 500
+        finally:
+            if response:
+                response.close()
+                response.release_conn()
