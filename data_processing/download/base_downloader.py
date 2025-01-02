@@ -3,7 +3,7 @@ import asyncio
 from datetime import datetime, timedelta
 import json
 
-BASE_OUTPUT_FOLDER = "./downloads"
+BASE_OUTPUT_FOLDER = os.getenv('BASE_OUTPUT_FOLDER', './downloads')
 
 
 class BaseTelegramDownloader:
