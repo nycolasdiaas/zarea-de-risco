@@ -3,7 +3,7 @@ from urllib3.response import BaseHTTPResponse
 from urllib3.exceptions import MaxRetryError
 
 
-class MetadataService:
+class MetadataServices:
     def __init__(
         self,
         endpoint: str,
@@ -27,7 +27,7 @@ class MetadataService:
 
             return client.get_object(
                 bucket_name=self.bucket_name,
-                object_name="Portalnoticiasceara/noticias_recentes_ultimas_24_horas/noticias_recentes_ultimas_24_horas.json",
+                object_name="Portalnoticiasceara/noticias_recentes_ultimas_24_horas/metadata.json",
             )
         except MaxRetryError as e:
             raise Exception(f"Máximo de tentativas atingido: {e}")
@@ -49,7 +49,7 @@ class MetadataService:
 
             return client.get_object(
                 bucket_name=self.bucket_name,
-                object_name="Portalnoticiasceara/noticias_recentes_ultimo_mes/noticias_recentes_ultimo_mes.json",
+                object_name="Portalnoticiasceara/noticias_recentes_ultimo_mes/metadata.json",
             )
         except MaxRetryError as e:
             raise Exception(f"Máximo de tentativas atingido: {e}")
@@ -60,7 +60,7 @@ class MetadataService:
 
             return client.get_object(
                 bucket_name=self.bucket_name,
-                object_name="Portalnoticiasceara/noticias_recentes_ultimos_7_dias/noticias_recentes_ultimos_7_dias.json",
+                object_name="Portalnoticiasceara/noticias_recentes_ultimos_7_dias/metadata.json",
             )
         except MaxRetryError as e:
             raise Exception(f"Máximo de tentativas atingido: {e}")
