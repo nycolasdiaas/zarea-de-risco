@@ -1,6 +1,6 @@
 from os import getenv
 from dotenv import load_dotenv
-from .services import MetadataService
+from .services import MetadataServices
 from flask_restful import Resource
 
 load_dotenv()
@@ -30,7 +30,7 @@ class GetDailyMetadata(BaseMetadataResource):
     def get(self):
         response = None
         try:
-            response = MetadataService(
+            response = MetadataServices(
                 self.endpoint,
                 self.access_key,
                 self.secret_key,
@@ -53,7 +53,7 @@ class GetMetadataFromDate(BaseMetadataResource):
     def get(self, date: str):
         response = None
         try:
-            response = MetadataService(
+            response = MetadataServices(
                 self.endpoint,
                 self.access_key,
                 self.secret_key,
@@ -74,8 +74,9 @@ class GetMonthlyMetadata(BaseMetadataResource):
         super().__init__()
 
     def get(self):
+        response = None
         try:
-            response = MetadataService(
+            response = MetadataServices(
                 self.endpoint,
                 self.access_key,
                 self.secret_key,
@@ -85,6 +86,10 @@ class GetMonthlyMetadata(BaseMetadataResource):
             return response.json()
         except Exception as e:
             return {"error": str(e)}, 500
+        finally:
+            if response:
+                response.close()
+                response.release_conn()
 
 
 class GetLastSevenDaysMetadata(BaseMetadataResource):
@@ -94,7 +99,7 @@ class GetLastSevenDaysMetadata(BaseMetadataResource):
     def get(self):
         response = None
         try:
-            response = MetadataService(
+            response = MetadataServices(
                 self.endpoint,
                 self.access_key,
                 self.secret_key,
@@ -117,7 +122,7 @@ class GetMetadataFromLocation(BaseMetadataResource):
     def get(self, state: str, city: str, neigborhood: str, street: str):
         response = None
         try:
-            response = MetadataService(
+            response = MetadataServices(
                 self.endpoint,
                 self.access_key,
                 self.secret_key,
