@@ -57,3 +57,57 @@ class GetMetadataFromDate(BaseMetadataResource):
             return response.json()
         except Exception as e:
             return {"error": str(e)}, 500
+
+
+class GetMonthlyMetadata(BaseMetadataResource):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def get(self):
+        try:
+            response = MetadataService(
+                self.endpoint,
+                self.access_key,
+                self.secret_key,
+                self.bucket_name,
+                self.secure,
+            ).get_monthly_metadata()
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}, 500
+
+
+class GetLastSevenDaysMetadata(BaseMetadataResource):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def get(self):
+        try:
+            response = MetadataService(
+                self.endpoint,
+                self.access_key,
+                self.secret_key,
+                self.bucket_name,
+                self.secure,
+            ).get_last_seven_days_metadata()
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}, 500
+
+
+class GetMetadataFromLocation(BaseMetadataResource):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def get(self, state: str, city: str, neigborhood: str, street: str):
+        try:
+            response = MetadataService(
+                self.endpoint,
+                self.access_key,
+                self.secret_key,
+                self.bucket_name,
+                self.secure,
+            ).get_metadata_from_location(state, city, neigborhood, street)
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}, 500
