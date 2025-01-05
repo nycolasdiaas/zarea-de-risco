@@ -1,18 +1,20 @@
 body {
-  background-color: #030812;
+  background-color: #FFFBFF;
   overflow-x: hidden; /* Hide horizontal scrollbar */
 }
-:root {
-  --main-color: rgb(255, 0, 230);
-}
+/* #030812 */
+
+
 .container1{
   filter: invert(1);
 }
+
 .black {
   transition: 1s ease-in-out;
   background-color: rgb(0, 0, 0) !important;
   color: var(--main-color);
 }
+
 img{
   -webkit-user-drag: none;
 }
@@ -27,10 +29,16 @@ nav {
 }
 
 .navbar {
-  color: #FFFBFF;
+  background-color: #F1F1F1;
+  color: #000000;
   text-align: left;
   transition: 0.3s ease-in-out;
 }
+
+#navbarTitle{
+  font-size: 3ch;
+}
+
 
 #imglogo {
   width: 150px;
@@ -62,11 +70,13 @@ nav {
   background: linear-gradient(#030812 1%, #02182B 5%); 
    background-color: #02182B;
 }
+
 #sec2 {
   background: linear-gradient(#02182B 80%, #030812 100%);
    color: #FFFBFF;
   background-color: #02182B;
 }
+
 #sec3{
   color: #FFFBFF;
 }
@@ -88,21 +98,16 @@ nav {
   background-color: #042541;
 }
 
-
-
-
 .navbarIndex {
   width: 90px !important;
   height: 40px;
 }
 
-
-
 .nav-link {
   text-decoration: none;
   position: relative;
   display: inline-block;
-  color: #FFFBFF !important;
+  color: #000000 !important;
   font-size: 20px !important;
   transition: transform 0.1s ease;
 }
@@ -113,7 +118,7 @@ nav {
   margin: auto;
   height: 3px;
   width: 100%;
-  background: #FCA311;
+  background: #7CB9E8;
   transform: scaleX(0);
   transition: transform 0.5s ease;
   position: absolute;
@@ -145,10 +150,6 @@ nav {
   font-size: 20px !important;
   clip-path: polygon(0 0, 100% calc(10% - 12px), 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
 }
-
-
-
-
 
 .mgr1 {
   margin-right: 160px !important;
@@ -242,4 +243,75 @@ nav {
   transition: 0.5s ease-in-out;
   box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
   opacity: 0;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  height: 50px;
+  border-radius: 30px;
+  padding-left: 35px;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+
+/* responsividade para logo */
+@media (max-width: 768px) {
+  #imglogo {
+      width: 70px;
+      margin: 0% !important;
+  }
+  #navbarTitle{
+    font-size: 2ch;
+  }
+
+  #navbarLinks{
+    display: none;
+  }
+
+  .container-fluid{
+    flex-wrap: nowrap !important;
+    justify-content: left !important;
+  }
+
+  .form-control{
+    width: 30vw !important;
+  }
+
+  .navbar.scrolled {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: rgba(3, 8, 18, 0.8) !important;
+    box-shadow: 0 5px 4px rgba(0, 0, 0, 0.5) !important;
+    transition: 0.2s ease-in-out;
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  
+    & #imglogo {
+        width: 30px;
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+        transition: 0.3s ease-in-out;
+    }
+  }
+  
+
+}
+
+/* Iphone 5 for example */
+@media (max-width: 320px) {
+  .form-control{
+    width: 25vw !important;
+  }
 }
