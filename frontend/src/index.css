@@ -1,5 +1,5 @@
 body {
-  background-color: E8E8E8;
+  background-color: #FFFBFF;
   overflow-x: hidden; /* Hide horizontal scrollbar */
 }
 /* #030812 */
@@ -29,10 +29,16 @@ nav {
 }
 
 .navbar {
+  background-color: #F1F1F1;
   color: #000000;
   text-align: left;
   transition: 0.3s ease-in-out;
 }
+
+#navbarTitle{
+  font-size: 3ch;
+}
+
 
 #imglogo {
   width: 150px;
@@ -257,4 +263,43 @@ nav {
   left: 15px;
   transform: translateY(-50%);
   color: #888;
+}
+
+
+/* responsividade para logo */
+@media (max-width: 768px) {
+  #imglogo {
+      width: 90px;
+      margin: 0% !important;
+  }
+  #navbarTitle{
+    font-size: 2ch;
+  }
+
+  #navbarLinks{
+    display: none;
+  }
+
+  .container-fluid{
+    justify-content: left !important;
+  }
+
+  .navbar.scrolled {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: rgba(3, 8, 18, 0.8) !important;
+    box-shadow: 0 5px 4px rgba(0, 0, 0, 0.5) !important;
+    transition: 0.2s ease-in-out;
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  
+    & #imglogo {
+        width: 30px;
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+        transition: 0.3s ease-in-out;
+    }
+  }
+  
+
 }

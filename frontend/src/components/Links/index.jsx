@@ -1,11 +1,10 @@
 import { handleScroll } from "../../resources/funcionalidades.js";
-import SearchBar from "../SearchBar/index.jsx";
 
 function Links() {
   return (
     <div
       className="collapse navbar-collapse justify-content-between"
-      id="navbarSupportedContent"
+      id="navbarLinks"
     >
       <ul className="navbar-nav mb-2 mb-lg-0 flex-grow-1 justify-content-center">
         <li className="nav-item">
@@ -45,7 +44,6 @@ function Links() {
           </button>
         </li>
       </ul>
-      <SearchBar />
     </div>
   );
 }
