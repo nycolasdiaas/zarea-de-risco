@@ -1,7 +1,6 @@
 function SearchBar() {
   return (
-    <div className="col-md-4 d-flex align-self-end">
-      <div className="search-container m-3 mgr2" id="searchBar">
+      <div className="search-container mgr2" id="searchBar">
         <input
           type="text"
           className="form-control search-input"
@@ -9,7 +8,6 @@ function SearchBar() {
         />
         <i className="fas fa-search search-icon"></i>
       </div>
-    </div>
   );
 }
 

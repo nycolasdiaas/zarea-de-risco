@@ -269,7 +269,7 @@ nav {
 /* responsividade para logo */
 @media (max-width: 768px) {
   #imglogo {
-      width: 90px;
+      width: 70px;
       margin: 0% !important;
   }
   #navbarTitle{
@@ -281,7 +281,12 @@ nav {
   }
 
   .container-fluid{
+    flex-wrap: nowrap !important;
     justify-content: left !important;
+  }
+
+  .form-control{
+    width: 30vw !important;
   }
 
   .navbar.scrolled {
@@ -302,4 +307,11 @@ nav {
   }
   
 
+}
+
+/* Iphone 5 for example */
+@media (max-width: 320px) {
+  .form-control{
+    width: 25vw !important;
+  }
 }
