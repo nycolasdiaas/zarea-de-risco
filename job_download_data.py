@@ -58,7 +58,9 @@ def save_media(message, media_folder):
 
             if os.path.exists(compressed_file_path):
                 print(f"A mídia já foi baixada e comprimida: {compressed_file_path}")
-                relative_path = os.path.relpath(compressed_file_path, base_output_folder)
+                relative_path = os.path.relpath(
+                    compressed_file_path, base_output_folder
+                )
                 return relative_path, media_type
 
             with tempfile.TemporaryDirectory() as temp_dir:
@@ -113,7 +115,7 @@ for chat in chats:
         )
 
         messages_by_date = {}
-        
+
         with tqdm(
             total=len(all_messages),
             desc="Processando mensagens e baixando mídias",
@@ -198,7 +200,10 @@ for chat in chats:
                                     ),
                                     "file_reference": None,
                                     "date": (
-                                        (message.media.photo.date - datetime.timedelta(hours=3)).isoformat()
+                                        (
+                                            message.media.photo.date
+                                            - datetime.timedelta(hours=3)
+                                        ).isoformat()
                                         if message.media
                                         and hasattr(message.media, "photo")
                                         else None
@@ -241,7 +246,9 @@ for chat in chats:
                         else None
                     ),
                     "edit_date": (
-                        (message.edit_date - datetime.timedelta(hours=3)).isoformat() if message.edit_date else None
+                        (message.edit_date - datetime.timedelta(hours=3)).isoformat()
+                        if message.edit_date
+                        else None
                     ),
                     "reactions": (
                         [
@@ -259,9 +266,9 @@ for chat in chats:
                 """ processed_messages.append(data) """
                 if message_date not in messages_by_date:
                     messages_by_date[message_date] = []
-                    
+
                 messages_by_date[message_date].append(data)
-                
+
                 pbar.update(1)
 
                 # output_file = f"{group_folder}/{str((message.date - datetime.timedelta(hours=3)).date() )}/metadata.json"
