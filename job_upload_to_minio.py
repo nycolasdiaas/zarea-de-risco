@@ -50,7 +50,7 @@ os.makedirs(base_output_folder, exist_ok=True)
 
 try:
     print(f"Access Key: {os.getenv('MINIO_ACCESS_KEY')}")
-    print(f"Secret Key: {os.getenv('MINIO_SECRECT_KEY')}")
+    print(f"Secret Key: {os.getenv('MINIO_SECRET_KEY')}")
     for chat in os.listdir(base_output_folder):
         group_folder = os.path.join(base_output_folder, chat)
         if os.path.isdir(group_folder):
