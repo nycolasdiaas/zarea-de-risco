@@ -1,0 +1,15 @@
+FROM node:alpine
+
+WORKDIR /app
+
+COPY frontend/package*.json ./
+
+RUN npm install
+
+COPY frontend .
+
+ENV HOST=0.0.0.0
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
