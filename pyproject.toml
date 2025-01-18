@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "a initial poetry project for Zarea de Risco"
 authors = ["welli7ngton <github.com/welli7ngton>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -63,7 +64,6 @@ zstandard = "0.23.0"
 black = "^24.10.0"
 ipykernel = "6.29.5"
 ipython = "8.31.0"
-
 
 [tool.poetry.group.dev.dependencies]
 taskipy = "^1.14.1"
