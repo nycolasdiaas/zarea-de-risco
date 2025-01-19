@@ -38,7 +38,7 @@ class MetadataServices:
 
             return client.get_object(
                 bucket_name=self.bucket_name,
-                object_name=f"Portalnoticiasceara/{date}/metadata.json",
+                object_name=f"Portalnoticiasceara/past_dates/{date}/metadata.json",
             )
         except MaxRetryError as e:
             raise Exception(f"Máximo de tentativas atingido: {e}")
