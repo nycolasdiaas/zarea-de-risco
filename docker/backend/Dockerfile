@@ -15,7 +15,7 @@ ENV FLASK_ENV="development"
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml poetry.lock README.md ./
 
 COPY backend/ ./backend/
 

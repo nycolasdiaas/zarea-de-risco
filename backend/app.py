@@ -15,7 +15,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return "Api is running."
+        return {"message": "Api is running."}
 
     api.add_resource(GetDailyMetadata, "/get_daily_metadata")
     api.add_resource(GetMetadataFromDate, "/get_metadata_from_date/<string:date>")
