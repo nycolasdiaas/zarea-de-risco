@@ -3,6 +3,9 @@ import asyncio
 from datetime import datetime, timedelta
 import json
 from telethon.tl.types import PeerChannel, PeerChat, PeerUser
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # BASE_OUTPUT_FOLDER = './downloads'
 BASE_OUTPUT_FOLDER = os.getenv("BASE_OUTPUT_FOLDER")

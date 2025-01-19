@@ -49,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--base_output_folder',
         type=str,
-        default='./downloads/',
+        default='../downloads/',
         help='Pasta base para upload no minIo'
     )
     
@@ -73,3 +73,5 @@ if __name__ == "__main__":
 
     except S3Error as e:
         raise FailUploadException(f"Erro ao subir os arquivos para o MinIO: {e}")
+    except Exception as e:
+        raise
