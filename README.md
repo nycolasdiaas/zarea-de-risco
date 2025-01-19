@@ -15,6 +15,7 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 - **MinIO**: 
 - **Docker**:
 - **Flask**:
+- **React + Vite**:
   
 ## Funcionalidades
 
