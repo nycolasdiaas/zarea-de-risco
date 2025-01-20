@@ -195,7 +195,7 @@ nav {
 }
 
 .imgsec2 {
-  width: 200px !important;
+  width: 27vw !important;
   transition: 0.5s ease-in-out;
   box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
   opacity: 0;
@@ -204,32 +204,49 @@ nav {
   /* Adiciona sombra */
 }
 
-.fadeInUp:hover {
-  width: 220px !important;
-  margin: -10px;
-  transition: 0.5s ease-in-out;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.8) !important;
+.Featured_MainTitle{
+  margin: 1vw 0rem 4vw 0vw;
+  font-size: 3vw;
+  width: 80% !important;
 }
 
-.h5section2 {
+.fadeInUp:hover {
+  /* scale is much better */
+  transform: scale(1.07);
+  transition: 0.3s ease-in-out;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.8) !important; 
+}
+
+.AnimatedText {
+  padding: 0vw 3vw 0vw 3vw;
+  color: #F1F1F1;
   opacity: 0;
   transition: 0.5s ease-in-out;
+  pointer-events: none; /* Prevents the text from interfering with hover state */
 }
 
-.fadeInUp:hover+.h5section2 {
+.featured_normal_text{
+  font-size: 0.8vw;
+  font-weight: 600;
+}
+
+.featured_news_title{
+  font-size: 2vw;
+  font-weight: 600;
+}
+
+.fadeInUp:hover+.AnimatedText {
   opacity: 1;
+  transform: translateY(-16vh);
   transition: 0.5s ease-in-out;
-  transform: translateY(15px);
 }
 
 @keyframes fadeInUp {
   from {
-      transform: translateY(20px);
       opacity: 0;
   }
 
   to {
-      transform: translateY(0);
       opacity: 1;
   }
 }
@@ -239,11 +256,14 @@ nav {
   animation-fill-mode: forwards;
   animation-duration: 1s;
   animation-delay: 1s;
-  width: 200px !important;
-  transition: 0.5s ease-in-out;
+  
+  width: 24vw !important;
+  height: 34vh !important;
+  transition: 0.3s ease-in-out;
   box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
   opacity: 0;
 }
+
 
 .search-container {
   position: relative;
