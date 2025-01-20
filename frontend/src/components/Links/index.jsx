@@ -1,4 +1,4 @@
-import { handleScroll } from "../../resources/funcionalidades.js";
+import { handleScroll } from "../../resources/effects.js";
 
 function Links() {
   return (
