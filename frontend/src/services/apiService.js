@@ -23,7 +23,6 @@ class ApiService {
         try {    
             const response = await axios.get(this.baseUrl + "/get_metadata_from_date/" + date)
             console.log("Data retrieved.")
-            console.log(response)
             return response
         } catch (error){
             console.error(error)
