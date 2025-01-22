@@ -2,6 +2,7 @@ import "./app.scss"
 import "./index.css"
 import Navbar from "./components/Navbar"
 import Featured from "./components/Featured"
+import Neighborhood from "./components/Neighborhood"
 // import { useEffect, useState } from "react"
 // import apiService from "./services/apiService"
 
@@ -28,6 +29,7 @@ function App() {
       <div>
         <Navbar/>
         <Featured />
+        <Neighborhood />
       </div>
       {/* <div>
         <h1>Dados do MinIO</h1>
