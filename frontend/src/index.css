@@ -41,7 +41,7 @@ nav {
 
 
 #imglogo {
-  width: 150px;
+  width: 8rem;
   margin-bottom: 25px !important;
   transition: 1s ease-in-out;
 }
@@ -50,7 +50,7 @@ nav {
 .navbar.scrolled {
   margin: 0 !important;
   padding: 0 !important;
-  background: rgba(3, 8, 18, 0.8) !important;
+  background: rgba(2, 24, 43, 0.8) !important;
   box-shadow: 0 5px 4px rgba(0, 0, 0, 0.5) !important;
   transition: 0.2s ease-in-out;
   -webkit-backdrop-filter: blur(3px);
@@ -61,6 +61,16 @@ nav {
       margin-bottom: 0 !important;
       margin-top: 0 !important;
       transition: 0.3s ease-in-out;
+  }
+
+  & .nav-link {
+      transition: 0.5s ease-in-out;
+      color: #F1F1F1 !important;
+  }
+
+  & .navbar-brand {
+      transition: 0.5s ease-in-out;
+      color: #F1F1F1 !important;
   }
 }
 
@@ -103,13 +113,19 @@ nav {
   height: 40px;
 }
 
+.navbar-brand{
+  color: #000000 !important;
+  font-size: 2rem !important;
+  transition: transform 0.5s ease-in-out;
+}
+
 .nav-link {
   text-decoration: none;
   position: relative;
   display: inline-block;
-  color: #000000 !important;
-  font-size: 20px !important;
-  transition: transform 0.1s ease;
+  color: #000000;
+  font-size: 1rem;
+  transition: transform 0.5s ease-in-out;
 }
 
 .nav-link::after {
@@ -146,10 +162,6 @@ nav {
   transition: 0.1s ease;
 }
 
-#btnind {
-  font-size: 20px !important;
-  clip-path: polygon(0 0, 100% calc(10% - 12px), 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
-}
 
 .mgr1 {
   margin-right: 160px !important;
@@ -195,41 +207,69 @@ nav {
 }
 
 .imgsec2 {
-  width: 200px !important;
+  width: 27vw !important;
   transition: 0.5s ease-in-out;
   box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
   opacity: 0;
-  /* animation: fadeInUp 1s ease-in-out forwards;  */
-  /* animacao para resolver o problema nas funcionalidades.tsx */
-  /* Adiciona sombra */
+}
+
+.Featured_MainTitle{
+  margin: 1vw 0rem 4vw 0vw;
+  font-size: 3vw;
+  width: 80% !important;
 }
 
 .fadeInUp:hover {
-  width: 220px !important;
-  margin: -10px;
-  transition: 0.5s ease-in-out;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.8) !important;
+  /* scale is much better */
+  transform: scale(1.07);
+  transition: 0.3s ease-in-out;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.8) !important; 
 }
 
-.h5section2 {
+.AnimatedText {
+  padding: 0vw 3vw 0vw 3vw;
+  color: #F1F1F1;
   opacity: 0;
   transition: 0.5s ease-in-out;
+  pointer-events: none; /* Prevents the text from interfering with hover state */
 }
 
-.fadeInUp:hover+.h5section2 {
+.featured_normal_text{
+  font-size: 0.8vw;
+  font-weight: 600;
+}
+
+.featured_news_title{
+  font-size: 2vw;
+  font-weight: 600;
+}
+
+.fadeInUp:hover+.AnimatedText {
   opacity: 1;
+  transform: translateY(-19vh);
   transition: 0.5s ease-in-out;
-  transform: translateY(15px);
+}
+
+.btn-simple{
+  background-color: #02182B;
+  color: #F1F1F1;
+  border-radius: 2rem;
+  border: 2px solid;
+  border: 2px solid #02182B;
+}
+
+.btn-simple:hover{
+  background-color: #F1F1F1;
+  color: #02182B;
+  border: 2px solid #02182B;
 }
 
 @keyframes fadeInUp {
   from {
-      transform: translateY(20px);
       opacity: 0;
   }
 
   to {
-      transform: translateY(0);
       opacity: 1;
   }
 }
@@ -239,29 +279,32 @@ nav {
   animation-fill-mode: forwards;
   animation-duration: 1s;
   animation-delay: 1s;
-  width: 200px !important;
-  transition: 0.5s ease-in-out;
+  
+  width: 24vw !important;
+  height: 34vh !important;
+  transition: 0.3s ease-in-out;
   box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
   opacity: 0;
 }
+
 
 .search-container {
   position: relative;
 }
 
 .search-input {
-  height: 50px;
+  height: 3rem;
   border-radius: 30px;
-  padding-left: 35px;
+  padding-left: 3rem;
   border: none;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .search-icon {
   position: absolute;
-  top: 50%;
-  left: 15px;
-  transform: translateY(-50%);
+  top: 1rem;
+  left: 1rem;
+  /* transform: translateY(-50%); */
   color: #888;
 }
 
@@ -269,11 +312,11 @@ nav {
 /* responsividade para logo */
 @media (max-width: 768px) {
   #imglogo {
-      width: 70px;
+      width: 12vw;
       margin: 0% !important;
   }
   #navbarTitle{
-    font-size: 2ch;
+    font-size: 1.2rem !important;
   }
 
   #navbarLinks{
@@ -286,9 +329,18 @@ nav {
   }
 
   .form-control{
-    width: 30vw !important;
+    transform: scale(0.8);
+    width: 8rem !important;
   }
 
+  .search-input{
+    padding-left: 2rem;
+  }
+
+  .search-icon{
+    transform: scale(0.8);
+
+  }
   .navbar.scrolled {
     margin: 0 !important;
     padding: 0 !important;
