@@ -5,7 +5,7 @@ function Neighborhood() {
           <div className="row d-flex flex-wrap text-center justify-content-center">
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Aerolandia.png"
                 alt="Imagem"
               />
@@ -17,7 +17,7 @@ function Neighborhood() {
   
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Cajazeiras.png"
                 alt="Imagem"
               />
@@ -28,7 +28,7 @@ function Neighborhood() {
           
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Cambeba.png"
                 alt="Imagem"
               />
@@ -39,7 +39,7 @@ function Neighborhood() {
             </div>
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Edson_Queiroz.png"
                 alt="Imagem"
               />
@@ -50,7 +50,7 @@ function Neighborhood() {
 
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Jose_de_Alencar.png"
                 alt="Imagem"
               />
@@ -61,7 +61,7 @@ function Neighborhood() {
 
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Lagoa_Sapiranga.png"
                 alt="Imagem"
               />
@@ -72,7 +72,7 @@ function Neighborhood() {
 
             <div className="col-md col-sm featured_container">
               <img
-                className="animatable fadeInUp rounded-3"
+                className="fadeInUp-bairros rounded-3"
                 src="/imgs/Parque_Iracema.png"
                 alt="Imagem"
               />
