@@ -288,17 +288,8 @@ nav {
   opacity: 0;
 }
 
-.fadeInUp-bairros {
-  animation-name: fadeInUp;
-  animation-fill-mode: forwards;
-  animation-duration: 1s;
-  animation-delay: 1s;
+.bairros{
   
-  width: 24vw !important;
-  height: 34vh !important;
-  transition: 0.3s ease-in-out;
-  box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
-  opacity: 0;
 }
 
 .search-container {
@@ -320,7 +311,9 @@ nav {
   /* transform: translateY(-50%); */
   color: #888;
 }
-
+.featured_container{
+  margin: 2vh;
+}
 
 /* responsividade para celulares */
 @media (max-width: 768px) {
@@ -372,7 +365,7 @@ nav {
   }
 
   .featured_container{
-    margin-bottom: 3vh;
+    margin: 1vh;
   }
 
   .fadeInUp {
@@ -390,15 +383,12 @@ nav {
     transform: scale(1);
     box-shadow: none !important; 
   }
-  .fadeInUp-bairros {
-    animation-name: none !important;
-    
-    width: 80vw !important;
-    height: 13rem !important;
-    transition: none;
-    box-shadow: none !important;
-    opacity: 1;
+  .bairros{
+    width: 40vw !important;
+    height: 7rem !important;
+  
   }
+
   .AnimatedText {
     color: #F1F1F1;
     opacity: 1;
