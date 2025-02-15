@@ -13,6 +13,9 @@ function Neighborhood() {
               {/* <div className="AnimatedText d-flex flex-wrap justify-content-center">
                 <h3 className="featured_news_title">Aerolandia</h3>
               </div> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center ">
+              <p className="featured_news_title_neighboorhood">Aerolandia</p>
+            </div>
             </div>
   
             <div className="col-md col-sm featured_container">
@@ -21,9 +24,9 @@ function Neighborhood() {
                 src="/imgs/Cajazeiras.png"
                 alt="Imagem"
               />
-              {/* <div className="AnimatedText">
-                <h3 className="featured_main_title">Cajazeiras</h3>
-              </div> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center">
+                <h3 className="featured_news_title_neighboorhood">Cajazeiras</h3>
+              </div>
             </div>
           
             <div className="col-md col-sm featured_container">
@@ -33,8 +36,8 @@ function Neighborhood() {
                 alt="Imagem"
               />
           
-              <div className="AnimatedText">
-                {/* <h3 className="featured_main_title">Cambeba</h3> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center">
+                <h3 className="featured_news_title_neighboorhood">Cambeba</h3>
               </div>
             </div>
             <div className="col-md col-sm featured_container">
@@ -43,8 +46,8 @@ function Neighborhood() {
                 src="/imgs/Edson_Queiroz.png"
                 alt="Imagem"
               />
-              <div className="AnimatedText">
-                {/* <h3 className="featured_main_title">Edson Queiroz</h3> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center">
+                <h3 className="featured_news_title_neighboorhood">Edson Queiroz</h3>
               </div>
             </div>
 
@@ -54,8 +57,8 @@ function Neighborhood() {
                 src="/imgs/Jose_de_Alencar.png"
                 alt="Imagem"
               />
-              <div className="AnimatedText">
-                {/* <h3 className="featured_main_title">Jose de Alencar</h3> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center">
+                <h3 className="featured_news_title_neighboorhood">Jose de Alencar</h3>
               </div>
             </div>
 
@@ -65,8 +68,8 @@ function Neighborhood() {
                 src="/imgs/Lagoa_Sapiranga.png"
                 alt="Imagem"
               />
-              <div className="AnimatedText">
-                {/* <h3 className="featured_main_title">Lagoa Sapiranga</h3> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center">
+                <h3 className="featured_news_title_neighboorhood">Lagoa Sapiranga</h3>
               </div>
             </div>
 
@@ -76,8 +79,8 @@ function Neighborhood() {
                 src="/imgs/Parque_Iracema.png"
                 alt="Imagem"
               />
-              <div className="AnimatedText">
-                {/* <h3 className="featured_main_title">Parque Iracema</h3> */}
+              <div className="AnimatedTextNeighboorhood d-flex flex-wrap justify-content-center">
+                <h3 className="featured_news_title_neighboorhood">Parque Iracema</h3>
               </div>
             </div>
             

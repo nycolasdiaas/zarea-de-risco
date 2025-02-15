@@ -235,6 +235,24 @@ nav {
   pointer-events: none; /* Prevents the text from interfering with hover state */
 }
 
+.AnimatedTextNeighboorhood {
+  color: #F1F1F1;
+  opacity: 0;
+  transition: 0.5s ease-in-out;
+  pointer-events: none; /* Prevents the text from interfering with hover state */
+}
+.fadeInUp:hover+.AnimatedTextNeighboorhood {
+  opacity: 1;
+  transform: translateY(-1vh);
+  transition: 0.5s ease-in-out;
+}
+.featured_news_title_neighboorhood{
+  font-size: 2vw;
+  font-weight: 600;
+  transform: translateY(-6rem);
+  position: absolute;
+}
+
 .featured_normal_text{
   font-size: 0.8vw;
   font-weight: 600;
@@ -244,6 +262,7 @@ nav {
   font-size: 2vw;
   font-weight: 600;
 }
+
 
 .fadeInUp:hover+.AnimatedText {
   opacity: 1;
@@ -256,7 +275,8 @@ nav {
   color: #F1F1F1;
   border-radius: 2rem;
   border: 2px solid #02182B;
-  margin-bottom: 4vh;
+  margin: 4vh 0vh 4vh 0vh;
+  width: 6rem;
 }
 
 .btn-simple:hover{
@@ -316,6 +336,8 @@ nav {
 }
 
 /* responsividade para celulares */
+/* TODO: */
+
 @media (max-width: 768px) {
   #imglogo {
       width: 12vw;
@@ -386,7 +408,6 @@ nav {
   .bairros{
     width: 40vw !important;
     height: 7rem !important;
-  
   }
 
   .AnimatedText {
@@ -403,6 +424,7 @@ nav {
     transform: translateY(-7rem);
     transition: none;
   }
+  
   .featured_news_title{
     padding: 0vw 5vw 0vw 5vw !important;
     font-size: 5vw;
@@ -423,6 +445,25 @@ nav {
     width: 80% !important;
     
   }
+  .AnimatedTextNeighboorhood {
+    color: #F1F1F1;
+    opacity: 1;
+    transition: 0.5s ease-in-out;
+    pointer-events: none; /* Prevents the text from interfering with hover state */
+  }
+  .fadeInUp:hover+.AnimatedTextNeighboorhood {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .featured_news_title_neighboorhood{
+    font-size: 5vw;
+    font-weight: 600;
+    transform: translateY(-4.3rem);
+    position: absolute;
+  
+  }
+
   .btn-simple{
     width: 25vw;
   }
