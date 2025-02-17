@@ -1,6 +1,6 @@
-function Featured() {
-  return (
-    <div className="container featured">
+function RecentNews() {
+    return (
+      <div className="container featured">
       <h1 className="Featured_MainTitle">Fique por dentro do que está acontecendo nos bairros de fortaleza</h1>
         <div className="row d-flex flex-wrap text-center justify-content-center">
           <div className="col-md col-sm featured_container">
@@ -49,7 +49,8 @@ function Featured() {
           </button>
         </div>
     </div>
-  );
-}
-
-export default Featured;
+    );
+  }
+  
+  export default RecentNews;
+  

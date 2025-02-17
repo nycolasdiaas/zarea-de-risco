@@ -217,6 +217,7 @@ nav {
   margin: 1vw 0rem 4vw 0vw;
   font-size: 3vw;
   width: 80% !important;
+  margin-bottom: 4vh;
 }
 
 .fadeInUp:hover {
@@ -232,6 +233,24 @@ nav {
   opacity: 0;
   transition: 0.5s ease-in-out;
   pointer-events: none; /* Prevents the text from interfering with hover state */
+}
+
+.AnimatedTextNeighboorhood {
+  color: #F1F1F1;
+  opacity: 0;
+  transition: 0.5s ease-in-out;
+  pointer-events: none; /* Prevents the text from interfering with hover state */
+}
+.fadeInUp:hover+.AnimatedTextNeighboorhood {
+  opacity: 1;
+  transform: translateY(-1vh);
+  transition: 0.5s ease-in-out;
+}
+.featured_news_title_neighboorhood{
+  font-size: 2vw;
+  font-weight: 600;
+  transform: translateY(-6rem);
+  position: absolute;
 }
 
 .featured_normal_text{
@@ -254,8 +273,9 @@ nav {
   background-color: #02182B;
   color: #F1F1F1;
   border-radius: 2rem;
-  border: 2px solid;
   border: 2px solid #02182B;
+  margin: 4vh 0vh 4vh 0vh;
+  width: 6rem;
 }
 
 .btn-simple:hover{
@@ -287,6 +307,9 @@ nav {
   opacity: 0;
 }
 
+.bairros{
+  
+}
 
 .search-container {
   position: relative;
@@ -307,9 +330,13 @@ nav {
   /* transform: translateY(-50%); */
   color: #888;
 }
+.featured_container{
+  margin: 2vh;
+}
 
+/* responsividade para celulares */
+/* TODO: */
 
-/* responsividade para logo */
 @media (max-width: 768px) {
   #imglogo {
       width: 12vw;
@@ -357,8 +384,88 @@ nav {
         transition: 0.3s ease-in-out;
     }
   }
-  
 
+  .featured_container{
+    margin: 1vh;
+  }
+
+  .fadeInUp {
+    animation-name: none !important;
+    
+    width: 80vw !important;
+    height: 13rem !important;
+    transition: none;
+    box-shadow: none !important;
+    opacity: 1;
+  }
+  .fadeInUp:hover {
+    /* scale is much better */
+    transition: none;
+    transform: scale(1);
+    box-shadow: none !important; 
+  }
+  .bairros{
+    width: 40vw !important;
+    height: 7rem !important;
+  }
+
+  .AnimatedText {
+    color: #F1F1F1;
+    opacity: 1;
+    transition: none;
+    transform: translateY(-7rem);
+    position: absolute;
+    right: 0.1vw;
+    pointer-events: none; /* Prevents the text from interfering with hover state */
+  }
+  .fadeInUp:hover+.AnimatedText {
+    opacity: 1;
+    transform: translateY(-7rem);
+    transition: none;
+  }
+  
+  .featured_news_title{
+    padding: 0vw 5vw 0vw 5vw !important;
+    font-size: 5vw;
+    font-weight: 600;
+    width: 80% !important;
+
+  }
+  .featured_normal_text{
+    padding: 0vw 3vw 0vw 3vw !important;
+    font-size: 3vw;
+    font-weight: 600;
+    width: 80% !important;
+
+  }
+  .Featured_MainTitle{
+    margin: 2vw 0rem 5vw 0vw;
+    font-size: 5vw;
+    width: 80% !important;
+    
+  }
+  .AnimatedTextNeighboorhood {
+    color: #F1F1F1;
+    opacity: 1;
+    transition: 0.5s ease-in-out;
+    pointer-events: none; /* Prevents the text from interfering with hover state */
+  }
+  .fadeInUp:hover+.AnimatedTextNeighboorhood {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .featured_news_title_neighboorhood{
+    font-size: 5vw;
+    font-weight: 600;
+    transform: translateY(-4.3rem);
+    position: absolute;
+  
+  }
+
+  .btn-simple{
+    width: 25vw;
+  }
 }
 
 /* Iphone 5 for example */

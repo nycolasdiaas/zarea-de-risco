@@ -3,6 +3,8 @@ import "./index.css"
 import Navbar from "./components/Navbar"
 import Featured from "./components/Featured"
 import Neighborhood from "./components/Neighborhood"
+import RecentNews from "./components/RecentNews"
+import Footer from "./components/Footer"
 // import { useEffect, useState } from "react"
 // import apiService from "./services/apiService"
 
@@ -30,6 +32,8 @@ function App() {
         <Navbar/>
         <Featured />
         <Neighborhood />
+        <RecentNews />
+        <Footer />
       </div>
       {/* <div>
         <h1>Dados do MinIO</h1>
