@@ -263,7 +263,6 @@ nav {
   font-weight: 600;
 }
 
-
 .fadeInUp:hover+.AnimatedText {
   opacity: 1;
   transform: translateY(-19vh);
