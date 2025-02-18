@@ -1,19 +1,18 @@
-import Navbar from "./components/Navbar"
-import Featured from "./components/Featured"
-import Neighborhood from "./components/Neighborhood"
-import RecentNews from "./components/RecentNews"
-import Footer from "./components/Footer"
+import Featured from "../../components/Featured"
+import Neighborhood from "../../components/Neighborhood"
+import RecentNews from "../../components/RecentNews"
+import Footer from "../../components/Footer"
+import Navbar from "../../components/Navbar";
 
 function Home() {
   return (
     <>
       <div>
-        {/* <Navbar />
+        <Navbar />
         <Featured />
         <Neighborhood />
         <RecentNews />
-        <Footer /> */}
-        poi
+        <Footer />
       </div>
     </>
   );
