@@ -1,6 +1,6 @@
 function Neighborhood() {
     return (
-      <div className="container featured">
+      <div className="container featured" id="BairrosSection">
         <h1 className="Featured_MainTitle">Procure por bairros</h1>
           <div className="d-flex flex-wrap text-center justify-content-center">
             <div className="col-md col-sm featured_container">

@@ -18,7 +18,7 @@ function Links() {
         </li>
         <li className="nav-item">
           <button
-            onClick={() => handleScroll("sec2")}
+            onClick={() => handleScroll("DestaquesSection")}
             className="nav-link aIndex me-5"
             id=""
           >
@@ -27,7 +27,7 @@ function Links() {
         </li>
         <li className="nav-item">
           <button
-            onClick={() => handleScroll("section3")}
+            onClick={() => handleScroll("BairrosSection")}
             className="nav-link aIndex me-5"
             id=""
           >
@@ -36,7 +36,7 @@ function Links() {
         </li>
         <li className="nav-item">
           <button
-            onClick={() => handleScroll("section4")}
+            onClick={() => handleScroll("RecentesSection")}
             className="nav-link aIndex me-5"
             id=""
           >
