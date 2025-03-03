@@ -2,8 +2,14 @@ from os import getenv
 from dotenv import load_dotenv
 from .services import MetadataServices
 from flask_restful import Resource
+from typing import Dict
 
 load_dotenv()
+
+
+class Home(Resource):
+    def get(self) -> Dict[str, str]:
+        return {"message": "API is Running."}
 
 
 class BaseMetadataResource(Resource):
@@ -92,7 +98,7 @@ class GetMonthlyMetadata(BaseMetadataResource):
                 response.release_conn()
 
 
-class GetLastSevenDaysMetadata(BaseMetadataResource):
+class GetWeeklyMetadata(BaseMetadataResource):
     def __init__(self) -> None:
         super().__init__()
 
