@@ -64,6 +64,7 @@ zstandard = "0.23.0"
 black = "^24.10.0"
 ipykernel = "6.29.5"
 ipython = "8.31.0"
+gunicorn = "^23.0.0"
 
 [tool.poetry.group.dev.dependencies]
 taskipy = "^1.14.1"
