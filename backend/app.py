@@ -1,10 +1,11 @@
 from flask import Flask
 from flask_restful import Api
 from .handle_minio.resources import (
+    Home,
     GetDailyMetadata,
     GetMetadataFromDate,
     GetMonthlyMetadata,
-    GetLastSevenDaysMetadata,
+    GetWeeklyMetadata,
     GetMetadataFromLocation,
 )
 
@@ -13,17 +14,14 @@ def create_app():
     app = Flask(__name__)
     api = Api(app)
 
-    @app.route("/")
-    def home():
-        return {"message": "Api is running."}
-
-    api.add_resource(GetDailyMetadata, "/get_daily_metadata")
-    api.add_resource(GetMetadataFromDate, "/get_metadata_from_date/<string:date>")
-    api.add_resource(GetMonthlyMetadata, "/get_monthly_metadata")
-    api.add_resource(GetLastSevenDaysMetadata, "/get_last_seven_days")
+    api.add_resource(Home, "/")
+    api.add_resource(GetDailyMetadata, "metadata/daily")
+    api.add_resource(GetWeeklyMetadata, "metadata/weekly")
+    api.add_resource(GetMonthlyMetadata, "metadata/monthly")
+    api.add_resource(GetMetadataFromDate, "metadata/date/<string:date>")
     api.add_resource(
         GetMetadataFromLocation,
-        "/get_metadata_from_location/<string:state>/<string:city>/<string:neigborhood>/<string:street>",
+        "metadata/location/<string:state>/<string:city>/<string:neigborhood>/<string:street>",
     )
 
     return app
