@@ -14,7 +14,7 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 - **Javacript**(frontend): 
 - **MinIO**: 
 - **Docker**:
-- **Flask**:
+- **Flask + Gunicorn + Nginx**:
 - **React + Vite**:
   
 ## Funcionalidades
