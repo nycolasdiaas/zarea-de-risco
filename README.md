@@ -10,12 +10,12 @@ O objetivo principal do projeto é coletar notícias e dados sobre segurança p�
 
 ## Tecnologias Usadas
 
-- **Python**(backend):
-- **Javacript**(frontend): 
-- **MinIO**: 
-- **Docker**:
-- **Flask + Gunicorn + Nginx**:
-- **React + Vite**:
+- **Python**(backend)
+- **Javacript**(frontend)
+- **MinIO**
+- **Docker**
+- **Flask + Gunicorn + Nginx**
+- **React + Vite**
   
 ## Funcionalidades
 
