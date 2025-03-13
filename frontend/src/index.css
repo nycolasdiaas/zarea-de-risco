@@ -255,6 +255,10 @@ nav {
 .featured_news_title{
   font-size: 2vw;
   font-weight: 600;
+  /* width: 20vw !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; */
 }
 
 .fadeInUp:hover+.AnimatedText {
