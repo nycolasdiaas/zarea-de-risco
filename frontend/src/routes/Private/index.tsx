@@ -1,7 +1,8 @@
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import NavBar from "../../components/Navbar";
-import { Home } from "../../pages/Home";
-import Usuarios from "../../pages/Usuarios";
+import Home  from "../../pages/Home";
+import News from "../../pages/AboutNews";
 
 const Private = () => {
   return (
@@ -9,7 +10,7 @@ const Private = () => {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/usuarios" element={<Usuarios />} />
+        <Route path="/noticia" element={<News />} />
       </Routes>
     </>
   );

@@ -305,6 +305,24 @@ nav {
   opacity: 0;
 }
 
+.NewsImage {
+  animation-name: fadeInUp;
+  animation-fill-mode: forwards;
+  animation-duration: 1s;
+  animation-delay: 1s;
+  
+  width: 24vw !important;
+  height: 34vh !important;
+  transition: 0.3s ease-in-out;
+  box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5) !important;
+  opacity: 0;
+}
+
+.rounded-news{
+  border-radius: 0rem 0rem 1rem 1rem !important;
+
+}
+
 .bairros{
   
 }
@@ -386,6 +404,9 @@ nav {
   .featured_container{
     margin: 1vh;
   }
+  .news_container{
+    margin: none;
+  }
 
   .fadeInUp {
     animation-name: none !important;
@@ -396,6 +417,16 @@ nav {
     box-shadow: none !important;
     opacity: 1;
   }
+  .NewsImage {
+    animation-name: none !important;
+    
+    width: 100vw !important;
+    height: 18rem !important;
+    transition: none;
+    box-shadow: none !important;
+    opacity: 1;
+  }
+
   .fadeInUp:hover {
     /* scale is much better */
     transition: none;
@@ -416,6 +447,13 @@ nav {
     right: 0.1vw;
     pointer-events: none; /* Prevents the text from interfering with hover state */
   }
+  .NewsText {
+    color: #000000;
+    opacity: 1;
+    transition: none;
+    pointer-events: none; /* Prevents the text from interfering with hover state */
+  }
+
   .fadeInUp:hover+.AnimatedText {
     opacity: 1;
     transform: translateY(-7rem);

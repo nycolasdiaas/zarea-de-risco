@@ -1,15 +1,17 @@
+import AboutNews from "../../components/AboutNews";
 import Footer from "../../components/Footer"
 import Navbar from "../../components/Navbar";
 
-function Home() {
+function News() {
   return (
     <>
       <div>
         <Navbar />
+        <AboutNews />
         <Footer />
       </div>
     </>
   );
 }
 
-export default Home;
+export default News;
